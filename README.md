@@ -1,4 +1,4 @@
-# ThrottleBot - Vehicle Verification Bot
+# 🤖 ThrottleBot - Vehicle Verification Bot
 
 We're simplying the process of verifying your vehicles across Discord by featuring a seamless and feature full experience.
 
