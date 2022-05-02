@@ -1,0 +1,32 @@
+{
+  "name": "throttlebot-verification",
+  "version": "1.0.0",
+  "description": "ThrottleBot Verification is a Discord bot which helps simplify verifying your vehicles across Discord by featuring a seamless and feature full experience.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidxdeveloper/throttlebot-verification.git"
+  },
+  "keywords": [
+    "discord",
+    "automotive",
+    "vehicle",
+    "verification"
+  ],
+  "author": "DavidxDeveloper",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/davidxdeveloper/throttlebot-verification/issues"
+  },
+  "homepage": "https://github.com/davidxdeveloper/throttlebot-verification#readme",
+  "dependencies": {
+    "@discordjs/rest": "^0.4.1",
+    "discord-api-types": "^0.32.0",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "mongoose": "^6.3.1"
+  }
+}
