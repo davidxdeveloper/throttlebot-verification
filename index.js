@@ -1,6 +1,5 @@
 const { Client, Collection, Intents } = require('discord.js');
 const fs = require('node:fs');
-
 require('dotenv').config()
 const discordToken = process.env.TOKEN;
 
@@ -10,11 +9,11 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 //Command Handler Collection
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
 for(const file of commandFiles){
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
 };
+
 //Event handler:
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
