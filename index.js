@@ -4,7 +4,7 @@ require('dotenv').config()
 const discordToken = process.env.TOKEN;
 
 // Client instances.
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS ] });
 
 //Command Handler Collection
 client.commands = new Collection();
@@ -25,5 +25,8 @@ for (const file of eventFiles) {
 	};
 };
 
+process.on('unhandledRejection', error => {
+	console.error('Unhandled promise rejection:', error);
+});
 
 client.login(discordToken);

@@ -5,7 +5,7 @@ const profileSchema = mongoose.Schema({
   userId: String,
   premiumUser: Boolean,
   premiumTier: Number,
-  embedColour: String,
+  embedColor: String,
   garageThumbnail: String
 });
 

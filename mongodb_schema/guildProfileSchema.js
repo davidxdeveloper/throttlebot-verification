@@ -8,7 +8,6 @@ const guildSchema = mongoose.Schema({
   loggingChannelId: Array,
   addedOn: String,
   customFooterIcon: String,
-  customFooterName: String,
   syncEnabled: Boolean,
   syncedGuildId: String,
 });

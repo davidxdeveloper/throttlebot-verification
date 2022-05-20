@@ -32,8 +32,10 @@ module.exports = {
 			async function checklist(){
 				/*
 				In this function we'll check for the following things:
-					1. Whether user has any cars.
-						1.A. If the user is the same as the initiator, ask them to
+					1. Check whether the server has been setup.
+						1.A. Check if all channels are configured.
+					2. Whether user has any cars.
+						2.A. If the user is the same as the initiator, ask them to
 						verify a ride first.
 				*/
 				if(userGarageSize === 0){
