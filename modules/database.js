@@ -1,7 +1,8 @@
 
 const garageSchema = require('../mongodb_schema/garageSchema.js');
 const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
-const userProfileSchema = require('../mongodb_schema/userProfileSchema.js')
+const verificationSchema = require('../mongodb_schema/verificationApplicationSchema.js');
+const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
 const { embedColor } = require('../modules/utility.js');
 const mongoose = require('mongoose');
 
@@ -9,15 +10,28 @@ async function obtainAllUserCars(userId, guildId){
     /*
         Returns all the verified vehicles for the specified user
         from a specified guild.
-        Note: Returns an object containing all the car details + the size of the garage.
     */
     const garageData = await garageSchema.find({ userId: userId, guildId: guildId });
-    const garageSize = garageData.length 
-    || 0;
-    return {
-        garageCars: garageData,
-        garageSize: garageSize
-    };
+    return garageData
+};
+
+async function obtainOneOpenUserApplication(userId, guildId, vehicleName){
+    //Returns one open user application with the specified parameters.
+    const applicationsData = await verificationSchema.findOne({ userId: userId, guildId: guildId, vehicle: vehicleName, status: 'open'});
+    console.log(applicationsData)
+    return applicationsData;
+};
+
+async function obtainAllUserApplications(userId, guildId){
+    //Returns all the applications from a specified user from a guild.
+    const applicationsData = await verificationSchema.find({ userId: userId, guildId: guildId });
+    return applicationsData;
+};
+
+async function obtainAllOpenUserApplications(userId, guildId){
+   //Returns the applications from a specified user from a guild.
+   const applicationsData = await verificationSchema.find({ userId: userId, guildId: guildId, status: 'open' });
+   return applicationsData; 
 };
 
 async function obtainGuildProfile(guildId){
@@ -57,4 +71,4 @@ async function defaultEmbedColor(userId = null){
     return color;
 };
 
-module.exports = { obtainAllUserCars, obtainGuildProfile, obtainUserProfile, defaultEmbedColor }
+module.exports = { obtainAllUserCars, obtainGuildProfile, obtainUserProfile, defaultEmbedColor, obtainAllUserApplications, obtainAllOpenUserApplications, obtainOneOpenUserApplication }

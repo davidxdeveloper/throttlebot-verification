@@ -5,11 +5,12 @@ const guildSchema = mongoose.Schema({
   guildId: String,
   guideChannelId: String,
   verificationChannelId: String,
-  loggingChannelId: Array,
+  loggingChannelId: String,
+  verifiedVehicleRoleId: String,
   addedOn: String,
   customFooterIcon: String,
   syncEnabled: Boolean,
   syncedGuildId: String,
 });
 
-module.exports = mongoose.model("Guilds Collection", guildSchema); 
+module.exports = mongoose.model("Guilds", guildSchema); 

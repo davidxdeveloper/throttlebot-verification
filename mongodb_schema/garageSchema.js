@@ -10,10 +10,6 @@ const garageSchema = mongoose.Schema({
   vehicleAddedDate: String,
   verificationImageLink: String,
   embedColor: String,
-  footerIcon: String,
-  footerLogo: String,
-  
-
 });
 
-module.exports = mongoose.model("Garage Collection", garageSchema); 
+module.exports = mongoose.model("Verified Vehicles", garageSchema); 

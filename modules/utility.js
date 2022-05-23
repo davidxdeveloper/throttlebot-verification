@@ -41,6 +41,7 @@ function isValidHttpUrl(string) {
     }
   
     return url.protocol === "http:" || url.protocol === "https:";
-  }
+};
+
 
 module.exports = { botName, botIcon, greenIndicator, redIndicator, guildJoinLogChannelId, guildLeaveLogChannelId, embedColor, greenColor, redColor, removeNonIntegers, errorEmbed, isValidHttpUrl }

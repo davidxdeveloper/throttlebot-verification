@@ -1,7 +1,7 @@
 const { obtainGuildProfile } = require('../modules/database.js')
 const mongoose = require('mongoose');
 const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
-
+const moment = require('moment');
 module.exports = {
 	//Event runs whenever the client (bot) is invited to a new server.
 	name: 'guildCreate',
@@ -11,7 +11,7 @@ module.exports = {
 		const guildId = guild.id;
 		const guildIcon = guild.iconURL({dynamic: true});
 		const guildOwnerId = guild.ownerId;
-
+		const todaysDate = moment.utc();
 		const guildProfile = await obtainGuildProfile(guildId) || [];
 		if(!guildProfile.length){
 			async function createGuildProfile(){
@@ -22,8 +22,9 @@ module.exports = {
 					guideChannelId: null,
 					verificationChannelId: null,
 					loggingChannelId: null,
+					verifiedVehicleRoleId: null,
+					adddedOn: todaysDate,
 					customFooterIcon: null,
-					customFooterName: null,
 					syncEnabled: false,
 					syncedGuildId: null,
 				})

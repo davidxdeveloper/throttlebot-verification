@@ -9,4 +9,4 @@ const profileSchema = mongoose.Schema({
   garageThumbnail: String
 });
 
-module.exports = mongoose.model("Users Collection", profileSchema); 
+module.exports = mongoose.model("Users", profileSchema); 
