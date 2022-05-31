@@ -46,7 +46,7 @@ module.exports = {
 		const loggingChannelId = guildProfile.loggingChannelId;
 		const syncEnabled = guildProfile.syncEnabled;
 		const syncedGuildId = guildProfile.syncedGuildId;
-		const syncedGuildData = await interaction.client.guilds.fetch(syncedGuildId);
+		let syncedGuildData; 
 		const footerIcon = guildProfile.customFooterIcon || guildIcon;
 		const footerText = `${guildName} • Vehicle Verification • OwnerId: ${initiatorId}`
 		//Misc
@@ -70,6 +70,7 @@ module.exports = {
 		//Checks if the sync is enabled to another server.
 		//If it does, then applying for verification will not be allowed unless inside the main server.
 		if(syncedGuildId){
+			syncedGuildData = await interaction.client.guilds.fetch(syncedGuildId)
 			if(!syncedGuildData){
 				await interaction.editReply({
 					embeds: [errorEmbed(`There was an error when fetching details of the synced server \`(ID: ${syncedGuildId})\``, initiatorAvatar)],

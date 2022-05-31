@@ -33,8 +33,6 @@ module.exports = {
 		const guildId = interaction.guild.id;
 		const guildName = interaction.guild.name;
 		const guildIcon = interaction.guild.iconURL({ dynamic: true });	
-		//Garage data for specified user.
-		const garageData = await obtainAllUserCars(userId, guildId);
 
 		//Guild Profile
 		const guildProfile = await obtainGuildProfile(guildId);
@@ -52,15 +50,13 @@ module.exports = {
 		let footerIcon = guildProfile.customFooterIcon || guildIcon;
 		const footerText = `${guildName} • Vehicle Verification`
 		const guildToFetchInfoFrom = syncedGuildId || guildId
-		
-		/*
-		In this function we'll check for the following things:
-			1. Check whether the server has been setup.
-				1.A. Check if all channels are configured.
-			2. Whether user has any cars.
-				2.A. If the user is the same as the initiator, ask them to
-				verify a ride first.
-		*/
+		//Misc
+		const messageFilter = (m) => m.author.id === initiatorId;
+		const embedColor = await defaultEmbedColor(userId);
+
+		//Garage data for specified user.
+		const garageData = await obtainAllUserCars(userId, guildToFetchInfoFrom);
+
 		if(!garageData || garageData?.length === 0){
 			let errEmbed;
 			let ephemeralStatus = false;
@@ -92,9 +88,81 @@ module.exports = {
 			text: footerText,
 			iconURL: footerIcon
 		});
-		//Handling any potential errors.
+
 		await interaction.editReply({
 			embeds: [garageEmbed]
-		})
+		});
+
+		const allowedResponses = Array.from(Array(garageData.length + 1).keys()).slice(1).map(x => `${x}`);
+		const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 10000, max: 3});
+		messageCollector.on('collect', async (collectedMessage) => {
+			const messageContent = collectedMessage.content;
+			const selectedOption = removeNonIntegers(messageContent);
+			if(!allowedResponses.includes(selectedOption)) return;
+			messageCollector.stop();
+			collectedMessage.delete();
+			const selectedVehicle = garageData[parseInt(selectedOption) - 1];
+			const vehicleName = selectedVehicle.vehicle;
+			const vehicleImages = selectedVehicle.vehicleImages;
+			const vehicleDescription = selectedVehicle.description;
+			const vehicleEmbedColor = selectedVehicle.embedColor || embedColor;
+			if(!vehicleImages || vehicleImages.length === 0){
+				await interaction.followUp({
+					content: `There are no images to display for **${vehicleName}**`,
+					ephemeral: true
+				});
+				return;
+			};
+			const vehicleEmbed = new MessageEmbed()
+			.setAuthor({
+				name: `${vehicleName} - Driven By ${userTag}`,
+				iconURL: userAvatar
+			})
+			.setColor(vehicleEmbedColor)
+			.setImage(vehicleImages[0])
+			.setFooter({
+				text: `${guildName} • Image 1 of ${vehicleImages.length}`,
+				iconURL: footerIcon
+			})
+			if(vehicleDescription) vehicleEmbed.setDescription(vehicleDescription);
+			let componentsArray = [];
+			const row = new MessageActionRow() 
+			const previousButton = new MessageButton()
+			.setCustomId(`previousVehicleImage+${userId}`)
+			.setLabel('Previous')
+			.setStyle('PRIMARY')
+			.setDisabled(true);
+			const nextButton = new MessageButton()
+			.setCustomId(`nextVehicleImage+${userId}`)
+			.setLabel('Next')
+			.setStyle('PRIMARY');
+			if(vehicleImages.length > 1){
+				row.addComponents(previousButton).addComponents(nextButton);
+				componentsArray = [row];
+			};
+			await interaction.editReply({
+				embeds: [vehicleEmbed],
+				components: componentsArray
+			});
+
+		});
+
+		messageCollector.on('end', async (collected) => {
+			/*
+			Checking if there were no responses collected 
+			Or if the responses that were collected are invalid.
+			*/
+			const collectedResponses = collected.map(x => x.content);
+			const whetherAllInvalidResponses = collectedResponses.every(x => {
+				return !allowedResponses.includes(x);
+			});
+			if(whetherAllInvalidResponses){
+				garageEmbed.setDescription(garageOutput.join('\n'))
+				await interaction.editReply({
+					embeds: [garageEmbed]
+				});
+				return;
+			}
+		});
 	},
 }; 

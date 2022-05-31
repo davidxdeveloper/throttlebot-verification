@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, ButtonInteraction } = require('discord.js');
+const { MessageEmbed, MessageActionRow,Modal ,MessageSelectMenu, MessageButton, ButtonInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { obtainGuildProfile, defaultEmbedColor } = require('../modules/database.js');
 const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
@@ -13,6 +13,7 @@ module.exports = {
 		if(!interaction.deferred) await interaction.deferReply({ ephemral: true });
 		//Defining user details.
 		const initiatorId = interaction.user.id;
+		new Modal
 		const initiatorUsername = interaction.user.username;
 		const initiatorAvatar = interaction.user.displayAvatarURL({ dynamic: true });
 		const initiatorPermissions = interaction.memberPermissions.toArray();
@@ -43,6 +44,7 @@ module.exports = {
 			const syncedGuildId = guildProfile.syncedGuildId;
 			let footerIcon = guildProfile.customFooterIcon || botIcon;
 			const footerText = `${guildName} • Vehicle Verification`
+			
 			//Misc 
 			const embedColor = await defaultEmbedColor(initiatorId);
 			//Filters

@@ -1,4 +1,3 @@
-
 const garageSchema = require('../mongodb_schema/garageSchema.js');
 const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
 const verificationSchema = require('../mongodb_schema/verificationApplicationSchema.js');
@@ -18,7 +17,6 @@ async function obtainAllUserCars(userId, guildId){
 async function obtainOneOpenUserApplication(userId, guildId, vehicleName){
     //Returns one open user application with the specified parameters.
     const applicationsData = await verificationSchema.findOne({ userId: userId, guildId: guildId, vehicle: vehicleName, status: 'open'});
-    console.log(applicationsData)
     return applicationsData;
 };
 
@@ -29,7 +27,7 @@ async function obtainAllUserApplications(userId, guildId){
 };
 
 async function obtainAllOpenUserApplications(userId, guildId){
-   //Returns the applications from a specified user from a guild.
+   //Returns all the open applications from a specified user from a guild.
    const applicationsData = await verificationSchema.find({ userId: userId, guildId: guildId, status: 'open' });
    return applicationsData; 
 };
@@ -71,4 +69,13 @@ async function defaultEmbedColor(userId = null){
     return color;
 };
 
-module.exports = { obtainAllUserCars, obtainGuildProfile, obtainUserProfile, defaultEmbedColor, obtainAllUserApplications, obtainAllOpenUserApplications, obtainOneOpenUserApplication }
+
+module.exports = { 
+    obtainAllUserCars, 
+    obtainGuildProfile, 
+    obtainUserProfile, 
+    defaultEmbedColor, 
+    obtainAllUserApplications, 
+    obtainAllOpenUserApplications, 
+    obtainOneOpenUserApplication, 
+};

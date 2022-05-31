@@ -9,6 +9,11 @@ const greenIndicator = '<:greenIndicator:975489221643108482>';
 const redIndicator = '<:redIndicator:975489221534031892>';
 const greenColor = '#77DD77';
 const redColor = '#FF6961';
+const patreonRedColor = '#F96854';
+const patreonBlueColor = '#052D49'
+const patreonBanner = 'https://cdn.discordapp.com/attachments/975485952325726278/980910367540641852/patreonBanner.png';
+const patreonBannerLarge = 'https://cdn.discordapp.com/attachments/975485952325726278/980910391737614346/patreonBannerLarge.png'
+
 function removeNonIntegers(string){
     return string.replace(/\D/g,'');
 };
@@ -43,5 +48,53 @@ function isValidHttpUrl(string) {
     return url.protocol === "http:" || url.protocol === "https:";
 };
 
+function patreonAdvertEmbed(avatar, title, description, footerIcon, footerText){
+    const patreonAdvertisementEmbed = new MessageEmbed()
+    .setAuthor({
+        name: title,
+        iconURL: avatar
+    })
+    .setDescription(description+'\nBy supporting, not only do you help with the development of the bot, your support allows us to keep the bot free for anyone to use and open source!')
+    .addField('Checkout Our Github', 'If you would like to support us in other ways, checkout our github page and [star the repository!](https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars)')
+    .setImage(patreonBanner)
+    .setColor(patreonRedColor)
+    .setFooter({
+        text: footerText,
+        iconURL: footerIcon
+    })
+    const linksRow = new MessageActionRow()
+    .addComponents(
+        new MessageButton()
+            .setLabel('Patreon')
+            .setStyle('LINK')
+            .setURL('https://www.patreon.com/throttlebotverification'),
+        new MessageButton()
+            .setLabel('Github')
+            .setStyle('LINK')
+            .setURL('https://github.com/davidxdeveloper/throttlebot-verification'),
+    );
+    return {
+        embeds: [patreonAdvertisementEmbed],
+        components: [linksRow]
+    };
+}
 
-module.exports = { botName, botIcon, greenIndicator, redIndicator, guildJoinLogChannelId, guildLeaveLogChannelId, embedColor, greenColor, redColor, removeNonIntegers, errorEmbed, isValidHttpUrl }
+module.exports = { 
+    botName,
+    botIcon,
+    greenIndicator,
+    redIndicator,
+    guildJoinLogChannelId,
+    guildLeaveLogChannelId,
+    embedColor,
+    greenColor,
+    redColor,
+    patreonBanner,
+    patreonBannerLarge,
+    patreonRedColor,
+    patreonBlueColor,
+    removeNonIntegers,
+    errorEmbed,
+    isValidHttpUrl,
+    patreonAdvertEmbed
+};
