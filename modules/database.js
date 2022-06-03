@@ -5,7 +5,15 @@ const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
 const { embedColor } = require('../modules/utility.js');
 const mongoose = require('mongoose');
 
-async function obtainAllUserCars(userId, guildId){
+async function obtainOneUserVehicle(userId, guildId, vehicleName){
+    /*
+        Returns the verified vehicle for the specified params.
+    */
+    const garageData = await garageSchema.find({ userId: userId, guildId: guildId, vehicle: vehicleName });
+    return garageData
+};
+
+async function obtainAllUserVehicles(userId, guildId){
     /*
         Returns all the verified vehicles for the specified user
         from a specified guild.
@@ -69,9 +77,9 @@ async function defaultEmbedColor(userId = null){
     return color;
 };
 
-
 module.exports = { 
-    obtainAllUserCars, 
+    obtainOneUserVehicle,
+    obtainAllUserVehicles, 
     obtainGuildProfile, 
     obtainUserProfile, 
     defaultEmbedColor, 

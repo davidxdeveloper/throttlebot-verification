@@ -1,6 +1,6 @@
 const { MessageEmbed, MessageActionRow, MessageButton, ButtonInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { obtainGuildProfile, defaultEmbedColor, obtainAllUserCars, obtainAllOpenUserApplications } = require('../modules/database.js');
+const { obtainGuildProfile, defaultEmbedColor, obtainAllUserVehicles, obtainAllOpenUserApplications } = require('../modules/database.js');
 const verificationApplicationSchema = require('../mongodb_schema/verificationApplicationSchema.js');
 const { botIcon, greenIndicator, redIndicator, greenColor, redColor, errorEmbed, removeNonIntegers, isValidHttpUrl, embedColor } = require('../modules/utility.js');
 const wait = require('node:timers/promises').setTimeout;
@@ -48,7 +48,7 @@ module.exports = {
 		const syncedGuildId = guildProfile.syncedGuildId;
 		let syncedGuildData; 
 		const footerIcon = guildProfile.customFooterIcon || guildIcon;
-		const footerText = `${guildName} • Vehicle Verification • OwnerId: ${initiatorId}`
+		const footerText = `${guildName} • Vehicle Verification`
 		//Misc
 		const embedColor = await defaultEmbedColor(initiatorId);
 		const buttonFilter = (ButtonInteraction) => ButtonInteraction.componentType === 'BUTTON' && ButtonInteraction.user.id === initiatorId && (ButtonInteraction.customId === 'confirmVerification' || ButtonInteraction.customId === 'denyVerification');
@@ -93,7 +93,7 @@ module.exports = {
 			return;
 		};
 		//If the attachment is greater than 8mb.
-		if(vehicleImageSize > 80000){
+		if(vehicleImageSize > 8000000){
 			await interaction.editReply({
 				embeds: [errorEmbed('The attachment you provided is too big, it must be under `8mb`', initiatorAvatar)],
 				components: [],
@@ -112,7 +112,7 @@ module.exports = {
 		};
 
 		//User's garage
-		const initiatorGarage = await obtainAllUserCars(initiatorId, guildId);
+		const initiatorGarage = await obtainAllUserVehicles(initiatorId, guildId);
 		//Check if there is a vehicle in the users garage
 		//with the same name as the one they're trying to verify.
 		if(initiatorGarage?.garageVehicles?.includes(vehicleName)){
@@ -201,20 +201,20 @@ module.exports = {
 					text: footerText,
 					iconURL: footerIcon
 				});
-				const confirmButton = new MessageButton()
-				.setCustomId('confirmApplication')
-				.setLabel('Confirm')
+				const approveButton = new MessageButton()
+				.setCustomId(`approveApplication+${initiatorId}`)
+				.setLabel('Approve')
 				.setStyle('SUCCESS');
 				const denyButton = new MessageButton()
-				.setCustomId('denyApplication')
+				.setCustomId(`denyApplication+${initiatorId}`)
 				.setLabel('Deny')
 				.setStyle('DANGER');
 				const denyButton2 = new MessageButton()
-				.setCustomId('denyReadGuide')
+				.setCustomId(`denyReadGuide+${initiatorId}`)
 				.setLabel('Read The Guide')
 				.setStyle('DANGER');
 				const row = new MessageActionRow()
-				.addComponents(confirmButton)
+				.addComponents(approveButton)
 				.addComponents(denyButton)
 				.addComponents(denyButton2)
 				

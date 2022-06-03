@@ -1,8 +1,10 @@
 const { MessageEmbed, MessageActionRow, MessageButton, ButtonInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { obtainGuildProfile, defaultEmbedColor, obtainAllUserCars, obtainOneOpenUserApplication } = require('../modules/database.js');
+const { obtainGuildProfile, defaultEmbedColor, obtainAllUserVehicles, obtainOneOpenUserApplication, obtainUserProfile } = require('../modules/database.js');
 const garageSchema = require('../mongodb_schema/garageSchema.js');
 const verificationSchema = require('../mongodb_schema/verificationApplicationSchema.js');
+const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
+
 const { botIcon, greenIndicator, redIndicator, greenColor, redColor, errorEmbed, removeNonIntegers, isValidHttpUrl, embedColor } = require('../modules/utility.js');
 const wait = require('node:timers/promises').setTimeout;
 const moment = require('moment');
@@ -13,7 +15,10 @@ module.exports = {
 	name: 'interactionCreate',
 	async execute(interaction) {
         if (!interaction.isButton()) return;
-        const buttonId = interaction.customId;
+        const bulkId = interaction.customId;
+        const ids = bulkId.split('+')
+        const buttonId = ids[0]
+        const buttonUserId = ids[1]
         if(['confirmApplication','denyApplication','denyReadGuide'].includes(buttonId)){
            await interaction.deferUpdate();
            //Guild information
@@ -44,11 +49,9 @@ module.exports = {
             const initiatorTag = interaction.user.tag
             //Verificaton application embed
             const vApplicationEmbed = interaction.message.embeds[0]
-            const footer = vApplicationEmbed.footer.text.split(/ +/);
-            const applicantId = footer[footer.length-1];
+            const applicantId = buttonUserId
             const vehicleName = vApplicationEmbed.fields[0].value;
             const applicationData = await obtainOneOpenUserApplication(applicantId, guildId, vehicleName);
-            console.log(applicationData)
             if(!applicationData){
                 await interaction.followUp({
                     embeds: [errorEmbed('The verification application could not be found.', initiatorAvatar)]
@@ -59,6 +62,7 @@ module.exports = {
             const vehicleImageURL = applicationData.vehicleImageURL;
             const vehicleImageProxyURL = applicationData.vehicleImageProxyURL
             //Applicant Details
+            const userProfile = await obtainUserProfile(applicantId);
             const applicantData = await interaction.member.guild.members.fetch(applicantId).catch(async e => {
                 //Since the member cannot be found, deny the application.
                 const denialReason = `User left/banned. Unable to fetch data.`
@@ -132,10 +136,9 @@ module.exports = {
                 return;
             };
             const todaysDate = moment.utc();
-            console.log(buttonId)
             switch(buttonId){
-                case 'confirmApplication':
-                    async function confirmApplication(){
+                case 'approveApplication':
+                    async function approveApplication(){
                         await verificationSchema.updateOne({userId: applicantId, vehicle: vehicleName, status: 'open'}, {$set: { status: 'closed', decision: 'approved', decidedBy: initiatorId, decidedOn: todaysDate }})
                         .catch(async err => {
                             await interaction.followUp({
@@ -147,7 +150,7 @@ module.exports = {
                         const newVerifiedRide = new garageSchema({
                             _id: mongoose.Types.ObjectId(),
                             guildId: guildId,
-                            userId: initiatorId,
+                            userId: applicantId,
                             vehicle: vehicleName,
                             vehicleImages: [],
                             vehicleDescription: null,
@@ -163,13 +166,29 @@ module.exports = {
                             return;
                         });
 
+                        if(!userProfile){
+                            //Creating the user profile for the new verified vehicle owner.
+                            const newUserProfile = new userProfileSchema({
+                                _id: mongoose.Types.ObjectId(),
+                                userId: applicantId,
+                                premiumUser: false,
+                                premiumTier: 0,
+                                embedColor: '',
+                                garageThumbnail: ''
+                            });
+                            await newUserProfile.save()
+                            .catch(async err => {
+                                console.log(err);
+                            });
+                        };
+
                         vApplicationEmbed.fields[3].value = 'Verified Successfully';
                         vApplicationEmbed.color = greenColor
                         vApplicationEmbed.addField('Decided By', `${initiatorTag} | <@${initiatorId}>`);
                         
                         const confirmedButton = new MessageButton()
                         .setCustomId('disabled')
-                        .setLabel('Confirmed')
+                        .setLabel('Approved')
                         .setStyle('SUCCESS')
                         .setDisabled(true);
                         const row = new MessageActionRow()
@@ -244,7 +263,7 @@ module.exports = {
                             ephemeral: true
                         });
                     };
-                    confirmApplication();
+                    approveApplication();
                     break
                 case 'denyApplication':
                     async function denyApplication(){

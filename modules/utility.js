@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 
 const guildJoinLogChannelId = '974705965653979227';
 const guildLeaveLogChannelId = '974705992698822727';
@@ -13,6 +13,7 @@ const patreonRedColor = '#F96854';
 const patreonBlueColor = '#052D49'
 const patreonBanner = 'https://cdn.discordapp.com/attachments/975485952325726278/980910367540641852/patreonBanner.png';
 const patreonBannerLarge = 'https://cdn.discordapp.com/attachments/975485952325726278/980910391737614346/patreonBannerLarge.png'
+const garageIconExample = 'https://cdn.discordapp.com/attachments/975485952325726278/982221023321665546/Garage_Icon.png'
 
 function removeNonIntegers(string){
     return string.replace(/\D/g,'');
@@ -74,8 +75,8 @@ function patreonAdvertEmbed(avatar, title, description, footerIcon, footerText){
             .setURL('https://github.com/davidxdeveloper/throttlebot-verification'),
     );
     return {
-        embeds: [patreonAdvertisementEmbed],
-        components: [linksRow]
+        advertEmbed: patreonAdvertisementEmbed,
+        buttonsRow: linksRow
     };
 }
 
@@ -93,6 +94,7 @@ module.exports = {
     patreonBannerLarge,
     patreonRedColor,
     patreonBlueColor,
+    garageIconExample,
     removeNonIntegers,
     errorEmbed,
     isValidHttpUrl,

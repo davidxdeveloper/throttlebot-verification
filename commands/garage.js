@@ -1,6 +1,6 @@
 const { MessageEmbed, MessageActionRow, MessageButton, ButtonInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { obtainGuildProfile, defaultEmbedColor, obtainAllUserCars } = require('../modules/database.js');
+const { obtainGuildProfile, defaultEmbedColor, obtainAllUserVehicles, obtainUserProfile } = require('../modules/database.js');
 const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
 const { botIcon, greenIndicator, redIndicator, greenColor, redColor, errorEmbed, removeNonIntegers, embedColor } = require('../modules/utility.js');
 const wait = require('node:timers/promises').setTimeout;
@@ -29,6 +29,12 @@ module.exports = {
 			});
 			return;
 		};
+		//User Profile 
+		const userProfile = await obtainUserProfile(userId);
+		const premiumUser = userProfile?.premiumUser;
+		const premiumTier = userProfile?.premiumTier;
+		let garageThumbnail = userProfile?.garageThumbnail;
+
 		//Guild information
 		const guildId = interaction.guild.id;
 		const guildName = interaction.guild.name;
@@ -55,7 +61,7 @@ module.exports = {
 		const embedColor = await defaultEmbedColor(userId);
 
 		//Garage data for specified user.
-		const garageData = await obtainAllUserCars(userId, guildToFetchInfoFrom);
+		const garageData = await obtainAllUserVehicles(userId, guildToFetchInfoFrom);
 
 		if(!garageData || garageData?.length === 0){
 			let errEmbed;
@@ -88,13 +94,14 @@ module.exports = {
 			text: footerText,
 			iconURL: footerIcon
 		});
+		if(garageThumbnail) garageEmbed.setThumbnail(garageThumbnail);
 
 		await interaction.editReply({
 			embeds: [garageEmbed]
 		});
 
 		const allowedResponses = Array.from(Array(garageData.length + 1).keys()).slice(1).map(x => `${x}`);
-		const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 10000, max: 3});
+		const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 3});
 		messageCollector.on('collect', async (collectedMessage) => {
 			const messageContent = collectedMessage.content;
 			const selectedOption = removeNonIntegers(messageContent);
@@ -104,12 +111,16 @@ module.exports = {
 			const selectedVehicle = garageData[parseInt(selectedOption) - 1];
 			const vehicleName = selectedVehicle.vehicle;
 			const vehicleImages = selectedVehicle.vehicleImages;
-			const vehicleDescription = selectedVehicle.description;
+			const vehicleDescription = selectedVehicle.vehicleDescription;
 			const vehicleEmbedColor = selectedVehicle.embedColor || embedColor;
 			if(!vehicleImages || vehicleImages.length === 0){
 				await interaction.followUp({
 					content: `There are no images to display for **${vehicleName}**`,
 					ephemeral: true
+				});
+				garageEmbed.setDescription(garageOutput.join('\n'))
+				await interaction.editReply({
+					embeds: [garageEmbed]
 				});
 				return;
 			};
@@ -128,12 +139,12 @@ module.exports = {
 			let componentsArray = [];
 			const row = new MessageActionRow() 
 			const previousButton = new MessageButton()
-			.setCustomId(`previousVehicleImage+${userId}`)
+			.setCustomId(`previousVehicleImage`)
 			.setLabel('Previous')
 			.setStyle('PRIMARY')
 			.setDisabled(true);
 			const nextButton = new MessageButton()
-			.setCustomId(`nextVehicleImage+${userId}`)
+			.setCustomId(`nextVehicleImage`)
 			.setLabel('Next')
 			.setStyle('PRIMARY');
 			if(vehicleImages.length > 1){
@@ -145,6 +156,71 @@ module.exports = {
 				components: componentsArray
 			});
 
+			//Button collector to manage the multiple images if it exists.
+			if(vehicleImages.length > 1){
+				let pages = vehicleImages;
+				let page = 1;
+
+				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 20000 });
+				buttonCollector.on('collect', async (collected) => {
+					await collected.deferUpdate();
+					const buttonId = collected.customId;
+					
+					switch(buttonId){
+						case 'nextVehicleImage':
+							async function nextImage(){
+								page++;
+								vehicleEmbed
+								.setImage(pages[page - 1])
+								.setFooter({
+									text: `${guildName} • Image ${page} of ${vehicleImages.length}`,
+									iconURL: footerIcon
+								});
+								previousButton.setDisabled(false);
+								if (page === pages.length){
+									nextButton.setDisabled(true);
+								};
+								const row = new MessageActionRow() 
+								row.addComponents(previousButton).addComponents(nextButton);
+								await interaction.editReply({
+									embeds: [vehicleEmbed],
+									components: [row]
+								});
+							};
+							nextImage();
+							break;
+						case 'previousVehicleImage':
+							async function previousImage(){
+								page--;
+								vehicleEmbed
+								.setImage(pages[page - 1])
+								.setFooter({
+									text: `${guildName} • Image ${page} of ${vehicleImages.length}`,
+									iconURL: footerIcon
+								})
+								nextButton.setDisabled(false);
+								if (page === 1){
+									previousButton.setDisabled(true);
+								};
+								const row = new MessageActionRow() 
+								row.addComponents(previousButton).addComponents(nextButton);
+								await interaction.editReply({
+									embeds: [vehicleEmbed],
+									components: [row]
+								});
+							};
+							previousImage();
+							break
+					};
+				});
+
+				buttonCollector.on('end', async (collected) => {
+					await interaction.editReply({
+						embeds: [vehicleEmbed],
+						components: []
+					});
+				});
+			};
 		});
 
 		messageCollector.on('end', async (collected) => {
@@ -164,5 +240,6 @@ module.exports = {
 				return;
 			}
 		});
+		
 	},
 }; 

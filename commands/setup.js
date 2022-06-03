@@ -13,16 +13,17 @@ module.exports = {
 		if(!interaction.deferred) await interaction.deferReply({ ephemral: true });
 		//Defining user details.
 		const initiatorId = interaction.user.id;
-		new Modal
 		const initiatorUsername = interaction.user.username;
 		const initiatorAvatar = interaction.user.displayAvatarURL({ dynamic: true });
 		const initiatorPermissions = interaction.memberPermissions.toArray();
+/*
 		if(!initiatorPermissions.includes('MANAGE_GUILD')){
 			interaction.editReply({
 				embeds: [errorEmbed('You do not have authorization to use this command. (Manage Server permission is required)', initiatorAvatar)]
 			});
 			return;
 		};
+		*/
 		//Guild information
 		const guildId = interaction.guild.id;
 		const guildName = interaction.guild.name;
@@ -640,7 +641,7 @@ module.exports = {
 								const attachmentURL = collectedMessage.attachments.first()?.url || messageContent;
 								const attachmentSize = collectedMessage.attachments.first()?.size;
 								const attachmentType = collectedMessage.attachments.first()?.contentType;
-								if(attachmentSize > 80000){
+								if(attachmentSize > 8000000){
 									//err, attachment too big
 									await interaction.editReply({
 										embeds: [errorEmbed('The attachment you provided is too big, it must be under `8mb`\nGoing back to main menu in 5s...', initiatorAvatar)],
