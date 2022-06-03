@@ -18,7 +18,7 @@ module.exports = {
         const ids = bulkId.split('+')
         const buttonId = ids[0]
         const buttonUserId = ids[1]
-        if(['confirmApplication','denyApplication','denyReadGuide'].includes(buttonId)){
+        if(['approveApplication','denyApplication','denyReadGuide'].includes(buttonId)){
            await interaction.deferUpdate();
            //Guild information
             const guildId = interaction.guild.id;
