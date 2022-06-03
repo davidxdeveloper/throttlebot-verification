@@ -9,11 +9,26 @@ const greenIndicator = '<:greenIndicator:975489221643108482>';
 const redIndicator = '<:redIndicator:975489221534031892>';
 const greenColor = '#77DD77';
 const redColor = '#FF6961';
+const patreonLogChannelId = '982377337754619985';
+const patreonLink = 'https://www.patreon.com/throttlebotverification'
 const patreonRedColor = '#F96854';
-const patreonBlueColor = '#052D49'
+const patreonBlueColor = '#052D49';
 const patreonBanner = 'https://cdn.discordapp.com/attachments/975485952325726278/980910367540641852/patreonBanner.png';
-const patreonBannerLarge = 'https://cdn.discordapp.com/attachments/975485952325726278/980910391737614346/patreonBannerLarge.png'
-const garageIconExample = 'https://cdn.discordapp.com/attachments/975485952325726278/982221023321665546/Garage_Icon.png'
+const patreonBannerLarge = 'https://cdn.discordapp.com/attachments/975485952325726278/980910391737614346/patreonBannerLarge.png';
+const garageIconExample = 'https://cdn.discordapp.com/attachments/975485952325726278/982221023321665546/Garage_Icon.png';
+const botInvite = 'https://discord.com/api/oauth2/authorize?client_id=851411747641884712&permissions=157035129920&scope=bot%20applications.commands';
+const botInviteAdmin = 'https://discord.com/api/oauth2/authorize?client_id=851411747641884712&permissions=8&scope=bot%20applications.commands';
+const supportServerInvite = 'https://discord.gg/Nh4A6HDZT4'
+const githubLink = 'https://github.com/davidxdeveloper/throttlebot-verification/'
+const ownerAvatar = 'https://cdn.discordapp.com/avatars/378171973429231616/a_a1790dd0cba3c69e26d515b531385e1e.gif?size=4096';
+const ownerTag = 'Davidddddddd#7076';
+const patreonT1 = '982011560794923038';
+const patreonT2 = '982012168482455582';
+const patreonT3 = '982012171569463317';
+const patreonT4 = '982012172269924483';
+const patreonDefault = '982012172483829893';
+const supportServerId = '851413403222147073';
+const botId = '851411747641884712';
 
 function removeNonIntegers(string){
     return string.replace(/\D/g,'');
@@ -68,11 +83,11 @@ function patreonAdvertEmbed(avatar, title, description, footerIcon, footerText){
         new MessageButton()
             .setLabel('Patreon')
             .setStyle('LINK')
-            .setURL('https://www.patreon.com/throttlebotverification'),
+            .setURL(patreonLink),
         new MessageButton()
             .setLabel('Github')
             .setStyle('LINK')
-            .setURL('https://github.com/davidxdeveloper/throttlebot-verification'),
+            .setURL(githubLink),
     );
     return {
         advertEmbed: patreonAdvertisementEmbed,
@@ -85,6 +100,7 @@ module.exports = {
     botIcon,
     greenIndicator,
     redIndicator,
+    patreonLogChannelId,
     guildJoinLogChannelId,
     guildLeaveLogChannelId,
     embedColor,
@@ -95,6 +111,19 @@ module.exports = {
     patreonRedColor,
     patreonBlueColor,
     garageIconExample,
+    botInvite,
+    botInviteAdmin,
+    supportServerInvite,
+    patreonLink,
+    githubLink,
+    ownerAvatar,
+    ownerTag,
+    patreonT1,
+    patreonT2,
+    patreonT3,
+    patreonT4,
+    patreonDefault,
+    supportServerId,
     removeNonIntegers,
     errorEmbed,
     isValidHttpUrl,

@@ -17,7 +17,7 @@ for (const file of commandFiles) {
 const rest = new REST({ version: '9' }).setToken(discordToken);
 
 //Use Routes.applicationCommands(clientId) when ready for public use.
-rest.put(Routes.applicationCommands(clientId, guild), { body: commands }) 
+rest.put(Routes.applicationCommands(clientId), { body: commands }) 
     .then((result) => console.log('Successfully registered application commands. - ', result.length) )
     .catch(console.error);
 

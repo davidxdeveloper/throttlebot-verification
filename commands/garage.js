@@ -1,9 +1,7 @@
-const { MessageEmbed, MessageActionRow, MessageButton, ButtonInteraction } = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { obtainGuildProfile, defaultEmbedColor, obtainAllUserVehicles, obtainUserProfile } = require('../modules/database.js');
-const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
-const { botIcon, greenIndicator, redIndicator, greenColor, redColor, errorEmbed, removeNonIntegers, embedColor } = require('../modules/utility.js');
-const wait = require('node:timers/promises').setTimeout;
+const {  errorEmbed, removeNonIntegers } = require('../modules/utility.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()

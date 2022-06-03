@@ -4,7 +4,6 @@ const { obtainGuildProfile, defaultEmbedColor, obtainAllUserVehicles, obtainOneO
 const garageSchema = require('../mongodb_schema/garageSchema.js');
 const verificationSchema = require('../mongodb_schema/verificationApplicationSchema.js');
 const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
-
 const { botIcon, greenIndicator, redIndicator, greenColor, redColor, errorEmbed, removeNonIntegers, isValidHttpUrl, embedColor } = require('../modules/utility.js');
 const wait = require('node:timers/promises').setTimeout;
 const moment = require('moment');

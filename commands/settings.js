@@ -1,12 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, ButtonInteraction, Modal, TextInputComponent} = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, Modal, TextInputComponent} = require('discord.js');
 const { obtainGuildProfile, defaultEmbedColor, obtainUserProfile, obtainAllUserVehicles } = require('../modules/database.js');
 const { vehicleSelection } = require('../modules/garageUtils.js');
-const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
 const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
 const garageSchema = require('../mongodb_schema/garageSchema.js');
 const { botIcon, greenIndicator, redIndicator, greenColor, redColor, patreonRedColor, patreonBanner, garageIconExample, errorEmbed, removeNonIntegers, isValidHttpUrl, patreonAdvertEmbed } = require('../modules/utility.js');
 const wait = require('node:timers/promises').setTimeout;
+var isHexColor = require( 'validate.io-color-hexadecimal' );
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -1629,8 +1629,13 @@ module.exports = {
 						case "embedColor_option":
 							async function embedColorOption(){
 								if(!menuCollectedData.deferred) await menuCollectedData.deferUpdate();
-
+								await interaction.followUp({
+									content: 'Releasing tomorrow.',
+									ephemeral: true
+								});
+								return settingsDashboard();
 							};
+							embedColorOption();
 							break;
 						case "exit_option":
 							async function exitOption(){

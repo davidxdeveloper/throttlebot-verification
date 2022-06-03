@@ -6,6 +6,9 @@ module.exports = {
 		.setDescription('Search server-wide for a specific vehicle.')
 		.addStringOption(option => option.setName('input').setDescription('Enter a string')),
 		async execute(interaction) {
-		return await interaction.reply(`*Insert search menu here*`);
+		return await interaction.reply({
+			content: `Coming soon.`,
+			ephemeral: true
+		});
 	},
 };

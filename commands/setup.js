@@ -1,8 +1,8 @@
-const { MessageEmbed, MessageActionRow,Modal ,MessageSelectMenu, MessageButton, ButtonInteraction } = require('discord.js');
+const { MessageEmbed, MessageActionRow,Modal ,MessageSelectMenu, MessageButton } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { obtainGuildProfile, defaultEmbedColor } = require('../modules/database.js');
 const guildProfileSchema = require('../mongodb_schema/guildProfileSchema.js');
-const { botIcon, greenIndicator, redIndicator, greenColor, redColor, errorEmbed, removeNonIntegers, isValidHttpUrl } = require('../modules/utility.js');
+const { botIcon, greenColor, errorEmbed, removeNonIntegers, isValidHttpUrl, ownerTag } = require('../modules/utility.js');
 const { url } = require('node:inspector');
 const wait = require('node:timers/promises').setTimeout;
 module.exports = {
@@ -16,14 +16,12 @@ module.exports = {
 		const initiatorUsername = interaction.user.username;
 		const initiatorAvatar = interaction.user.displayAvatarURL({ dynamic: true });
 		const initiatorPermissions = interaction.memberPermissions.toArray();
-/*
 		if(!initiatorPermissions.includes('MANAGE_GUILD')){
 			interaction.editReply({
 				embeds: [errorEmbed('You do not have authorization to use this command. (Manage Server permission is required)', initiatorAvatar)]
 			});
 			return;
 		};
-		*/
 		//Guild information
 		const guildId = interaction.guild.id;
 		const guildName = interaction.guild.name;
@@ -366,6 +364,23 @@ module.exports = {
 									})
 									return;
 								});
+
+								const guideEmbed = new MessageEmbed()
+								.setTitle('How To Verify')
+								.setDescription('Down below, you can find the steps on how you can verify your vehicle. Please make sure you follow all the steps and requirements listed below.')
+								.addField('Steps',`1. Take a picture of your vehicle by holding your vehicle keys and a piece of paper that has the server name \`(${guildName})\` and your Discord name + tag \`(${ownerTag})\` handwritten on it.\n2. Now type the slash command \`/verify\`, enter the vehicle name and upload the image you took in step one.\n3. Wait for your application to be processed by the server staff. Please keep your DMs open to get updates.\n\nAn example verification image is displayed below.`)
+								.addField('Rules & Requirements','1. It must be a vehicle.\n2. The paper must include the server name and discord username.\n3. The image must be clear.\n4. Only verify vehicles you own. Not rentals, friend\'s vehicles etc.')
+								.addField('After Verifying','1. You can checkout your garage using `/garage`\n2. You can personalize your vehicle by adding images, setting descriptions etc. using `/settings`.')
+								.setImage('https://cdn.discordapp.com/attachments/561931963506622465/863988227399221268/Image_from_iOS.jpg')
+								.setColor('#FFFCFF')
+								.setFooter({
+									text: footerText,
+									iconURL: footerIcon
+								});
+								providedChannel.send({
+									embeds: [guideEmbed]
+								});
+
 								const confirmationEmbed = new MessageEmbed()
 								.setAuthor({
 									name: 'Server Setup - Guide Channel Configured',
