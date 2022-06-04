@@ -159,7 +159,7 @@ module.exports = {
 				let pages = vehicleImages;
 				let page = 1;
 
-				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 20000 });
+				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 300000 });
 				buttonCollector.on('collect', async (collected) => {
 					await collected.deferUpdate();
 					const buttonId = collected.customId;
