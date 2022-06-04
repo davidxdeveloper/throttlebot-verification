@@ -103,6 +103,7 @@ module.exports = {
 			const vehicleOwnerId = selectedVehicle.userId;
 			let vehicleDescription = selectedVehicle.vehicleDescription;
 			let vehicleImages = selectedVehicle.vehicleImages;
+			console.log(vehicleImages)
 			async function settingsDashboard(){
 				const settingsDashboardEmbed = new MessageEmbed()
 				.setAuthor({
@@ -236,7 +237,7 @@ module.exports = {
 											if(!buttonCollected.deferred) await buttonCollected.deferUpdate();
 											//If the vehicle already has an image and the user wishes to add another,
 											//We'll check if the user has an image uploaded and if they belong to tier 3 / 4 (Chad Tier & Supreme Overlord respectively.)
-											if(vehicleImages.length >= 1 && ![3,4].includes(premiumTier)){
+											if(vehicleImages.length >= 1 && ![3,4].includes(premiumTier) && !premiumUser){
 												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Support us on patreon and be able to showcase your vehicle with multiple images!', footerIcon, footerText)
 												await buttonCollected.followUp({
 													embeds: [advertEmbed],
@@ -354,7 +355,8 @@ module.exports = {
 													await wait(5000);
 													return imagesOption();
 												};
-
+												
+												vehicleImages.push(attachmentURL)
 												await garageSchema.updateOne({guildId: guildId, userId: initiatorId, vehicle: vehicleName }, {$push: {vehicleImages: attachmentURL }})
 												.catch(async e => {
 													await interaction.editReply({
@@ -399,7 +401,6 @@ module.exports = {
 													components: [buttonsRow]
 												});	
 
-												vehicleImages.push(attachmentURL);
 												//Logging that a new vehicle image was uploaded to the logs channel.
 												const newImageUploadedLog = new MessageEmbed()
 												.setAuthor({
@@ -435,7 +436,7 @@ module.exports = {
 													case 'imageUploadConfirmedAdd':
 														async function addMoreImages(){
 															await buttonCollected.deferUpdate();
-															if(vehicleImages.length >= 1 && ![3,4].includes(premiumTier)){
+															if(vehicleImages.length >= 1 && ![3,4].includes(premiumTier) && !premiumUser){
 																const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Support us on patreon and be able to showcase your vehicle with multiple images!', footerIcon, footerText)
 																await buttonCollected.followUp({
 																	embeds: [advertEmbed],
@@ -950,7 +951,7 @@ module.exports = {
 								switch(buttonId){
 									case 'setDescription':
 										async function setDescription(){
-											if(![2,3,4].includes(premiumTier)){
+											if(![2,3,4].includes(premiumTier) && !premiumUser){
 												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Support us on patreon and be able to showcase your vehicle with descriptions!', footerIcon, footerText)
 												await buttonCollected.reply({
 													embeds: [advertEmbed],
