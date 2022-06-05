@@ -102,15 +102,16 @@ module.exports = {
 			return;
 		};
 		//If the provided attachment is not an image.
-		if(!vehicleImageType?.includes('image')){
-			await interaction.editReply({
-				embeds: [errorEmbed('The attachment you provided does not seem to be a valid image.', initiatorAvatar)],
-				components: [],
-				ephemeral: true
-			});
-			return;
+		if(vehicleImageType){
+			if(!vehicleImageType.includes('image')){
+				await interaction.editReply({
+					embeds: [errorEmbed('The attachment you provided does not seem to be a valid image.', initiatorAvatar)],
+					components: [],
+					ephemeral: true
+				});
+				return;
+			};
 		};
-
 		//User's garage
 		const initiatorGarage = await obtainAllUserVehicles(initiatorId, guildId);
 		//Check if there is a vehicle in the users garage
