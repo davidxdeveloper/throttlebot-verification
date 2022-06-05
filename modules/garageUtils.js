@@ -40,7 +40,7 @@ async function vehicleSelection(garage, userData, footerText, footerIcon, embedC
                 });
 
                 const allowedResponses = Array.from(Array(garage.length + 1).keys()).slice(1).map(x => `${x}`);
-                const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 3});
+                const messageCollector = interaction.channel.createMessageCollector({ filter: messageFilter, time: 60000, max: 3});
                 messageCollector.on('collect', async (collectedMessage) => {
                     const messageContent = collectedMessage.content;
                     const selectedOption = removeNonIntegers(messageContent);

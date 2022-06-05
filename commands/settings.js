@@ -103,7 +103,6 @@ module.exports = {
 			const vehicleOwnerId = selectedVehicle.userId;
 			let vehicleDescription = selectedVehicle.vehicleDescription;
 			let vehicleImages = selectedVehicle.vehicleImages;
-			console.log(vehicleImages)
 			async function settingsDashboard(){
 				const settingsDashboardEmbed = new MessageEmbed()
 				.setAuthor({
@@ -160,7 +159,7 @@ module.exports = {
 				});
 
 				const menuCollector = interaction.channel.createMessageComponentCollector({
-					menuFilter,
+					filter: menuFilter,
 					max: 1
 				});
 
@@ -219,7 +218,7 @@ module.exports = {
 								});
 
 								//Component collector to handle the buttons.
-								const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
+								const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
 								.catch(e => {});
 								if(!buttonCollected){
 									await interaction.followUp({
@@ -291,7 +290,7 @@ module.exports = {
 											//message collector can stop right there, else it can delete the interaction message.
 											let whetherButtonCollected = false;
 											const buttonCollector = interaction.channel.createMessageComponentCollector({
-												buttonFilter,
+												filter: buttonFilter,
 												max: 1,
 												componentType: 'BUTTON',
 												time: 120000
@@ -311,7 +310,7 @@ module.exports = {
 											});
 				
 											//Using a message collector to obtain the channel details.
-											const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 120000, max: 1});
+											const messageCollector = interaction.channel.createMessageCollector({ filter: messageFilter, time: 120000, max: 1});
 											messageCollector.on('end', async (allCollected) => {
 												const collected = allCollected.first();
 												if(!collected){
@@ -420,7 +419,7 @@ module.exports = {
 													embeds: [newImageUploadedLog]
 												});
 												
-												const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+												const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 												.catch(e => {
 
 												});
@@ -506,7 +505,7 @@ module.exports = {
 											
 											let whetherButtonCollected = false;
 											const buttonCollector = interaction.channel.createMessageComponentCollector({
-												buttonFilter,
+												filter: buttonFilter,
 												max: 1,
 												componentType: 'BUTTON',
 												time: 60000
@@ -525,7 +524,7 @@ module.exports = {
 												};
 											});
 
-											const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 1});
+											const messageCollector = interaction.channel.createMessageCollector({ filter: messageFilter, time: 60000, max: 1});
 											messageCollector.on('end', async (allCollected) => {
 												const collected = allCollected.first();
 												if(!collected){
@@ -614,7 +613,7 @@ module.exports = {
 												logChannel.send({
 													embeds: [removeImageLogEmbed]
 												});
-												const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+												const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 												.catch(e => {});
 												if(!buttonCollected){
 													await interaction.editReply({
@@ -687,7 +686,7 @@ module.exports = {
 												components: [buttonsRow]
 											});
 
-											const buttonCollected_2 = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+											const buttonCollected_2 = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 											.catch(e => {
 											});
 											if(!buttonCollected_2){
@@ -762,7 +761,7 @@ module.exports = {
 															embeds: [resetLogEmbed]
 														});
 
-														const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+														const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 														.catch(e => {});
 														if(!buttonCollected){
 															await interaction.editReply({
@@ -825,7 +824,7 @@ module.exports = {
 															components: [buttonsRow]
 														});
 														
-														const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+														const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 														.catch(e => {});
 														if(!buttonCollected){
 															await interaction.editReply({
@@ -936,7 +935,7 @@ module.exports = {
 									components: [imagesButtonRow]
 								});
 
-								const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
+								const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
 								.catch(e => {
 								});
 								if(!buttonCollected){
@@ -975,7 +974,7 @@ module.exports = {
 											modal.addComponents(firstActionRow);
 
 											await buttonCollected.showModal(modal);
-											buttonCollected.awaitModalSubmit({modalFilter, time: 300000 }) //
+											buttonCollected.awaitModalSubmit({filter: modalFilter, time: 300000 }) //
 											.then(async modalResponse => {
 												const providedVehicleDescription = modalResponse.fields.getTextInputValue('vehicleDescriptionInput');
 												await modalResponse.deferUpdate();
@@ -1038,7 +1037,7 @@ module.exports = {
 													embeds: [newDescriptionLog]
 												});
 
-												const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+												const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 												.catch(e => {});
 												if(!buttonCollected){
 													await interaction.editReply({
@@ -1119,7 +1118,7 @@ module.exports = {
 												components: [buttonsRow]
 											});
 
-											const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+											const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 											.catch(e => {
 											});
 											if(!buttonCollected){
@@ -1192,7 +1191,7 @@ module.exports = {
 														logChannel.send({
 															embeds: [resetLogEmbed]
 														});
-														const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+														const buttonCollected = await interaction.channel.awaitMessageComponent({ filter:buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 														.catch(e => {});
 														if(!buttonCollected){
 															await interaction.editReply({
@@ -1254,7 +1253,7 @@ module.exports = {
 															components: [buttonsRow]
 														});
 
-														const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+														const buttonCollected = await interaction.channel.awaitMessageComponent({ filter:buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 														.catch(e => {});
 														if(!buttonCollected){
 															await interaction.editReply({
@@ -1355,7 +1354,7 @@ module.exports = {
 									components: [buttonRow]
 								});
 								
-								const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
+								const buttonCollected = await interaction.channel.awaitMessageComponent({ filter:buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
 								.catch(e => {});
 								if(!buttonCollected){
 									await interaction.followUp({
@@ -1403,7 +1402,7 @@ module.exports = {
 
 											let whetherButtonCollected = false;
 											const buttonCollector = interaction.channel.createMessageComponentCollector({
-												buttonFilter,
+												filter: buttonFilter,
 												max: 1,
 												componentType: 'BUTTON',
 												time: 120000
@@ -1421,7 +1420,7 @@ module.exports = {
 													await interaction.deleteReply();
 												};
 											});
-											const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 120000, max: 1});
+											const messageCollector = interaction.channel.createMessageCollector({ filter: messageFilter, time: 120000, max: 1});
 											messageCollector.on('end', async (allCollected) => {
 												const collected = allCollected.first();
 												if(!collected){
@@ -1511,7 +1510,7 @@ module.exports = {
 													embeds: [newGarageIconUploadedLog]
 												});
 
-												const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+												const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 												.catch(e => {
 
 												});
@@ -1579,7 +1578,7 @@ module.exports = {
 											await userProfileSchema.updateOne({ userId: initiatorId }, {$set: { garageThumbnail: '' }})
 
 
-											const buttonCollected = await interaction.channel.awaitMessageComponent({ buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+											const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
 											.catch(e => {});
 											if(!buttonCollected){
 												await interaction.editReply({

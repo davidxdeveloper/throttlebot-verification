@@ -169,7 +169,7 @@ module.exports = {
 		});
 
 		const buttonCollector = interaction.channel.createMessageComponentCollector({
-			buttonFilter,
+			filter: buttonFilter,
 			max: 1,
 			time: 60000
 		});

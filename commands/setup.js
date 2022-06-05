@@ -141,7 +141,7 @@ module.exports = {
 
 			//Menu collector to obtain the selected option.
 			const menuCollector = interaction.channel.createMessageComponentCollector({
-				menuFilter,
+				filter:menuFilter,
 				max: 1
 			});
 
@@ -182,7 +182,7 @@ module.exports = {
 
 							//The buttons will be managed by button collectors.
 							const buttonCollector = interaction.channel.createMessageComponentCollector({
-								buttonFilter,
+								filter:buttonFilter,
 								max: 1
 							});
 							
@@ -198,7 +198,7 @@ module.exports = {
 							});
 
 							//Using a message collector to obtain the channel details.
-							const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 1});
+							const messageCollector = interaction.channel.createMessageCollector({ filter:messageFilter, time: 60000, max: 1});
 
 							messageCollector.on('collect', async (collectedMessage) => {
 								buttonCollector.stop();
@@ -301,7 +301,7 @@ module.exports = {
 
 							//The buttons will be managed by button collectors.
 							const buttonCollector = interaction.channel.createMessageComponentCollector({
-								buttonFilter,
+								filter:buttonFilter,
 								max: 1
 							});
 							
@@ -317,7 +317,7 @@ module.exports = {
 							});
 
 							//Using a message collector to obtain the channel details.
-							const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 1});
+							const messageCollector = interaction.channel.createMessageCollector({ filter:messageFilter, time: 60000, max: 1});
 
 							messageCollector.on('collect', async (collectedMessage) => {
 								buttonCollector.stop();
@@ -435,7 +435,7 @@ module.exports = {
 
 							//The buttons will be managed by button collectors.
 							const buttonCollector = interaction.channel.createMessageComponentCollector({
-								buttonFilter,
+								filter:buttonFilter,
 								max: 1
 							});
 							
@@ -451,7 +451,7 @@ module.exports = {
 							});
 
 							//Using a message collector to obtain the channel details.
-							const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 1});
+							const messageCollector = interaction.channel.createMessageCollector({ filter:messageFilter, time: 60000, max: 1});
 
 							messageCollector.on('collect', async (collectedMessage) => {
 								buttonCollector.stop();
@@ -552,7 +552,7 @@ module.exports = {
 
 							//The buttons will be managed by button collectors.
 							const buttonCollector = interaction.channel.createMessageComponentCollector({
-								buttonFilter,
+								filter:buttonFilter,
 								max: 1
 							});
 							
@@ -568,7 +568,7 @@ module.exports = {
 							});
 
 							//Using a message collector to obtain the channel details.
-							const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 1});
+							const messageCollector = interaction.channel.createMessageCollector({ filter:messageFilter, time: 60000, max: 1});
 
 							messageCollector.on('collect', async (collectedMessage) => {
 								buttonCollector.stop();
@@ -650,7 +650,7 @@ module.exports = {
 								components: []
 							});
 							//Using a message collector to obtain the attachment link.
-							const messageCollector = interaction.channel.createMessageCollector({ messageFilter, time: 60000, max: 1});
+							const messageCollector = interaction.channel.createMessageCollector({ filter:messageFilter, time: 60000, max: 1});
 							messageCollector.on('collect', async (collectedMessage) => {
 								const messageContent = collectedMessage.content;
 								const attachmentURL = collectedMessage.attachments.first()?.url || messageContent;
