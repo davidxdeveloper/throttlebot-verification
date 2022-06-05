@@ -102,7 +102,7 @@ module.exports = {
 			return;
 		};
 		//If the provided attachment is not an image.
-		if(!vehicleImageType.includes('image')){
+		if(!vehicleImageType?.includes('image')){
 			await interaction.editReply({
 				embeds: [errorEmbed('The attachment you provided does not seem to be a valid image.', initiatorAvatar)],
 				components: [],
