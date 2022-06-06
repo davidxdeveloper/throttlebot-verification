@@ -90,7 +90,7 @@ module.exports = {
 			const garageData = await obtainAllUserVehicles(initiatorId, guildId);
 			if(!garageData || garageData?.length === 0){
 				await interaction.editReply({
-					embeds:[errorEmbed(`**${userName},**\nYou do not have any verified rides! Please have them verified first by using the \`/verify\` command first.`)],
+					embeds:[errorEmbed(`**${initiatorUsername},**\nYou do not have any verified rides! Please have them verified first by using the \`/verify\` command first.`)],
 					ephemeral: true
 				});
 				return;
