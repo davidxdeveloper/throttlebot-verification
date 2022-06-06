@@ -99,7 +99,7 @@ module.exports = {
 			const selectedVehicle = await vehicleSelection(garageData, initiatorData, footerText, footerIcon, embedColor, interaction);
 			if(!selectedVehicle) return;
 			const vehicleName = selectedVehicle.vehicle;
-			const verificationImage = selectedVehicle.verificationImageLink;
+			const verificationImage = selectedVehicle.verificationImageLink || "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 			const vehicleOwnerId = selectedVehicle.userId;
 			let vehicleDescription = selectedVehicle.vehicleDescription;
 			let vehicleImages = selectedVehicle.vehicleImages;
@@ -935,7 +935,7 @@ module.exports = {
 									components: [imagesButtonRow]
 								});
 
-								const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
+								const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 600000, max: 1 })
 								.catch(e => {
 								});
 								if(!buttonCollected){
@@ -969,7 +969,7 @@ module.exports = {
 											.setMinLength(30)
 											.setMaxLength(300)
 											.setRequired(true)
-											.setPlaceholder('Type your vehicle\'s description here')
+											.setPlaceholder('Type your vehicle\'s description here within 5 minutes.')
 											const firstActionRow = new MessageActionRow().addComponents(vehicleDescriptionInput);
 											modal.addComponents(firstActionRow);
 
@@ -1130,7 +1130,7 @@ module.exports = {
 												return;
 											};
 											const buttonId = buttonCollected.customId;
-											switch(buttonId_2){
+											switch(buttonId){
 												case 'confirmDescriptionReset':
 													async function descriptionResetConfirmation(){
 														await buttonCollected.deferUpdate();
