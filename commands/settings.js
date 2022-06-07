@@ -4,9 +4,9 @@ const { obtainGuildProfile, defaultEmbedColor, obtainUserProfile, obtainAllUserV
 const { vehicleSelection } = require('../modules/garageUtils.js');
 const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
 const garageSchema = require('../mongodb_schema/garageSchema.js');
-const { botIcon, greenIndicator, redIndicator, greenColor, redColor, patreonRedColor, patreonBanner, garageIconExample, errorEmbed, removeNonIntegers, isValidHttpUrl, patreonAdvertEmbed } = require('../modules/utility.js');
+const { botIcon, greenColor, redColor, garageIconExample, garageEmbedColorExample, errorEmbed, removeNonIntegers, isValidHttpUrl, patreonAdvertEmbed } = require('../modules/utility.js');
 const wait = require('node:timers/promises').setTimeout;
-var isHexColor = require( 'validate.io-color-hexadecimal' );
+var isHexColor = require('validate.io-color-hexadecimal');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -47,7 +47,8 @@ module.exports = {
 			const premiumTier = userProfile?.premiumTier;
 			let garageThumbnail = userProfile?.garageThumbnail;
 			//Misc 
-			const embedColor = await defaultEmbedColor(initiatorId);
+			const mainInteractionId = interaction.id;
+			let embedColor = await defaultEmbedColor(initiatorId);
 			//Filters
 			const messageFilter = (m) => m.author.id === initiatorId;
 			const menuFilter = (menuInteraction) => menuInteraction.componentType === 'SELECT_MENU' && menuInteraction.customId === 'settingsMenu' && menuInteraction.user.id === initiatorId;
@@ -99,7 +100,7 @@ module.exports = {
 			const selectedVehicle = await vehicleSelection(garageData, initiatorData, footerText, footerIcon, embedColor, interaction);
 			if(!selectedVehicle) return;
 			const vehicleName = selectedVehicle.vehicle;
-			const verificationImage = selectedVehicle.verificationImageLink || "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+			const verificationImage = selectedVehicle.verificationImageLink || "https://www.youtube.com/watch?v=dQw4w9WgXcQ" //Checkout this link.
 			const vehicleOwnerId = selectedVehicle.userId;
 			let vehicleDescription = selectedVehicle.vehicleDescription;
 			let vehicleImages = selectedVehicle.vehicleImages;
@@ -127,27 +128,27 @@ module.exports = {
 							{
 								label: 'Images',
 								description: 'Add, remove or reset images on your vehicle.',
-								value: 'images_option',
+								value: `images_option+${mainInteractionId}`,
 							},
 							{
 								label: 'Description',
 								description: 'Provide a description for your vehicle.',
-								value: 'description_option',
+								value: `description_option+${mainInteractionId}`,
 							},
 							{
 								label: 'Garage Icon',
 								description: 'Set a personalised icon for your garage.',
-								value: 'garageIcon_option',
+								value: `garageIcon_option+${mainInteractionId}`,
 							},
 							{
 								label: 'Embed Color',
 								description: 'Customize the color on the embeds.',
-								value: 'embedColor_option',
+								value: `embedColor_option+${mainInteractionId}`,
 							},
 							{
 								label: 'Exit',
 								description: 'Exit the interface.',
-								value: 'exit_option',
+								value: `exit_option+${mainInteractionId}`,
 							},
 						]),
 				);
@@ -171,7 +172,7 @@ module.exports = {
 					};
 					const selectedOptionId = menuCollectedData.values[0];
 					switch(selectedOptionId){
-						case "images_option":
+						case `images_option+${mainInteractionId}`:
 							async function imagesOption(){
 								if(!menuCollectedData.deferred) await menuCollectedData.deferUpdate();
 								const imagesOptionEmbed = new MessageEmbed()
@@ -186,25 +187,25 @@ module.exports = {
 									iconURL: footerIcon
 								});
 								const uploadImageButton = new MessageButton()
-								.setCustomId('uploadImage')
+								.setCustomId(`uploadImage+${mainInteractionId}`)
 								.setLabel('Upload')
 								.setStyle('PRIMARY');
 								const removeImageButton = new MessageButton()
-								.setCustomId('removeImage')
+								.setCustomId(`removeImage+${mainInteractionId}`)
 								.setLabel('Remove')
 								.setStyle('PRIMARY')
 								.setDisabled(true);
 								const resetImageButton = new MessageButton()
-								.setCustomId('resetImage')
+								.setCustomId(`resetImage+${mainInteractionId}`)
 								.setLabel('Reset')
 								.setStyle('PRIMARY')
 								.setDisabled(true);
 								const backButton = new MessageButton()
-								.setCustomId('backImage')
+								.setCustomId(`backImage+${mainInteractionId}`)
 								.setLabel('Back')
 								.setStyle('SECONDARY');
 								const exitButton = new MessageButton()
-								.setCustomId('exitImage')
+								.setCustomId(`exitImage+${mainInteractionId}`)
 								.setLabel('Exit')
 								.setStyle('DANGER');
 
@@ -231,13 +232,31 @@ module.exports = {
 								const buttonId = buttonCollected.customId;
 
 								switch(buttonId){
-									case 'uploadImage':
+									case `uploadImage+${mainInteractionId}`:
 										async function uploadImageOption(){
 											if(!buttonCollected.deferred) await buttonCollected.deferUpdate();
 											//If the vehicle already has an image and the user wishes to add another,
 											//We'll check if the user has an image uploaded and if they belong to tier 3 / 4 (Chad Tier & Supreme Overlord respectively.)
-											if(vehicleImages.length >= 1 && ![3,4].includes(premiumTier) && !premiumUser){
-												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Support us on patreon and be able to showcase your vehicle with multiple images!', footerIcon, footerText)
+											if(vehicleImages.length >= 5 && ![1,2,3,4].includes(premiumTier) && !premiumUser){
+												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Only 5 images are allowed by default, checkout our premium offerings if you wish to upload more!', footerIcon, footerText)
+												await buttonCollected.followUp({
+													embeds: [advertEmbed],
+													components: [buttonsRow],
+													ephemeral: true
+												});
+												return imagesOption();
+											};
+											if(vehicleImages.length >= 10 && ![2,3,4].includes(premiumTier) && !premiumUser){
+												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Only 10 images are allowed to `Basic Tier`, checkout the other premium offerings if you wish to upload more!', footerIcon, footerText)
+												await buttonCollected.followUp({
+													embeds: [advertEmbed],
+													components: [buttonsRow],
+													ephemeral: true
+												});
+												return imagesOption();
+											};
+											if(vehicleImages.length >= 20 && ![3,4].includes(premiumTier) && !premiumUser){
+												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Only 20 images are allowed to `Premium Tier`, checkout the other premium offerings if you wish to upload more!', footerIcon, footerText)
 												await buttonCollected.followUp({
 													embeds: [advertEmbed],
 													components: [buttonsRow],
@@ -274,11 +293,11 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('uploadImageBack'),
+													.setCustomId(`uploadImageBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('uploadImageExit'),
+													.setCustomId(`uploadImageExit+${mainInteractionId}`),
 											);
 											await interaction.editReply({
 												embeds: [addImagePromptEmbed],
@@ -302,9 +321,9 @@ module.exports = {
 												whetherButtonCollected = true;
 												await collected.deferUpdate();
 												const buttonId = collected.customId;
-												if(buttonId === 'uploadImageBack'){
+												if(buttonId === `uploadImageBack+${mainInteractionId}`){
 													return imagesOption();
-												}else if(buttonId === 'uploadImageExit'){
+												}else if(buttonId === `uploadImageExit+${mainInteractionId}`){
 													await interaction.deleteReply();
 												};
 											});
@@ -385,15 +404,15 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Add More Images')
 													.setStyle('SUCCESS')
-													.setCustomId('imageUploadConfirmedAdd'),
+													.setCustomId(`imageUploadConfirmedAdd+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('imageUploadConfirmedBack'),
+													.setCustomId(`imageUploadConfirmedBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('imageUploadConfirmedExit'),
+													.setCustomId(`imageUploadConfirmedExit+${mainInteractionId}`),
 												);
 												await interaction.editReply({
 													embeds: [confirmationEmbed],
@@ -432,11 +451,27 @@ module.exports = {
 												};
 												const buttonId = buttonCollected.customId;
 												switch(buttonId){
-													case 'imageUploadConfirmedAdd':
+													case `imageUploadConfirmedAdd+${mainInteractionId}`:
 														async function addMoreImages(){
 															await buttonCollected.deferUpdate();
-															if(vehicleImages.length >= 1 && ![3,4].includes(premiumTier) && !premiumUser){
-																const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Support us on patreon and be able to showcase your vehicle with multiple images!', footerIcon, footerText)
+															if(vehicleImages.length >= 5 && ![1,2,3,4].includes(premiumTier) && !premiumUser){
+																const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Only 5 images are allowed by default, checkout our premium offerings if you wish to upload more!', footerIcon, footerText)
+																await buttonCollected.followUp({
+																	embeds: [advertEmbed],
+																	components: [buttonsRow],
+																	ephemeral: true
+																});
+																return imagesOption();
+															}else if(vehicleImages.length >= 10 && ![2,3,4].includes(premiumTier) && !premiumUser){
+																const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Only 10 images are allowed to `Basic Tier`, checkout the other premium offerings if you wish to upload more!', footerIcon, footerText)
+																await buttonCollected.followUp({
+																	embeds: [advertEmbed],
+																	components: [buttonsRow],
+																	ephemeral: true
+																});
+																return imagesOption();
+															} else if(vehicleImages.length >= 20 && ![3,4].includes(premiumTier) && !premiumUser){
+																const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Only 20 images are allowed to `Premium Tier`, checkout the other premium offerings if you wish to upload more!', footerIcon, footerText)
 																await buttonCollected.followUp({
 																	embeds: [advertEmbed],
 																	components: [buttonsRow],
@@ -449,14 +484,16 @@ module.exports = {
 														};
 														addMoreImages();
 														break;
-													case 'imageUploadConfirmedBack':
-														function goBackAfterUploading(){
+													case `imageUploadConfirmedBack+${mainInteractionId}`:
+														async function goBackAfterUploading(){
+															await buttonCollected.deferUpdate();
 															return imagesOption();
 														};
 														goBackAfterUploading();
 														break;
-													case 'imageUploadConfirmedExit':
+													case `imageUploadConfirmedExit+${mainInteractionId}`:
 														async function exitAfterUploading(){
+															await buttonCollected.deferUpdate();
 															await interaction.editReply({
 																embeds: [confirmationEmbed],
 																components: []
@@ -469,7 +506,7 @@ module.exports = {
 										};
 										uploadImageOption();
 										break;
-									case 'removeImage':
+									case `removeImage+${mainInteractionId}`:
 										async function removeImageOption(){
 											if(!buttonCollected.deferred) await buttonCollected.deferUpdate();
 											const vehicleImagesOutput = vehicleImages.map((x, i) => `${`\`${i+1}.\` [Click Here](${x})`}`)
@@ -492,11 +529,11 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('removeImageBack'),
+													.setCustomId(`removeImageBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('removeImageExit'),
+													.setCustomId(`removeImageExit+${mainInteractionId}`),
 											);
 											await interaction.editReply({
 												embeds: [removeImageSelectionEmbed],
@@ -517,9 +554,9 @@ module.exports = {
 												whetherButtonCollected = true;
 												await collected.deferUpdate();
 												const buttonId = collected.customId;
-												if(buttonId === 'removeImageBack'){
+												if(buttonId === `removeImageBack+${mainInteractionId}`){
 													return imagesOption();
-												}else if(buttonId === 'removeImageExit'){
+												}else if(buttonId === `removeImageExit+${mainInteractionId}`){
 													await interaction.deleteReply();
 												};
 											});
@@ -584,11 +621,11 @@ module.exports = {
 													new MessageButton()
 														.setLabel('Back')
 														.setStyle('SECONDARY')
-														.setCustomId('removeImageConfirmedBack'),
+														.setCustomId(`removeImageConfirmedBack+${mainInteractionId}`),
 													new MessageButton()
 														.setLabel('Exit')
 														.setStyle('DANGER')
-														.setCustomId('removeImageConfirmedExit'),
+														.setCustomId(`removeImageConfirmedExit+${mainInteractionId}`),
 												);
 												await interaction.editReply({
 													embeds: [removeImageConfirmationEmbed],
@@ -624,14 +661,14 @@ module.exports = {
 												};
 												const buttonId = buttonCollected.customId;
 												switch(buttonId){
-													case 'removeImageConfirmedBack':
+													case `removeImageConfirmedBack+${mainInteractionId}`:
 														async function removeImageConfirmedBack(){
 															await buttonCollected.deferUpdate();
 															return imagesOption();
 														};
 														removeImageConfirmedBack();
 														break;
-													case 'removeImageConfirmedExit':
+													case `removeImageConfirmedExit+${mainInteractionId}`:
 														async function removeImageConfirmedExit(){
 															await buttonCollected.deferUpdate();
 															await interaction.deleteReply();
@@ -644,7 +681,7 @@ module.exports = {
 										};
 										removeImageOption();
 										break;
-									case 'resetImage':
+									case `resetImage+${mainInteractionId}`:
 										async function resetImageOption(){
 											if(!buttonCollected.deferred) await buttonCollected.deferUpdate();
 											const imagesToReset = vehicleImages.map((x, i) => `${`\`${i+1}.\` [Click Here](${x})`}`)
@@ -667,19 +704,19 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Confirm')
 													.setStyle('SUCCESS')
-													.setCustomId('resetConfirm'),
+													.setCustomId(`resetConfirm+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Deny')
 													.setStyle('DANGER')
-													.setCustomId('resetDeny'),
+													.setCustomId(`resetDeny+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('resetBack'),
+													.setCustomId(`resetBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('resetExit'),
+													.setCustomId(`resetExit+${mainInteractionId}`),
 											);
 											await interaction.editReply({
 												embeds: [resetEmbed],
@@ -699,7 +736,7 @@ module.exports = {
 											};
 											const buttonId_2 = buttonCollected_2.customId;
 											switch(buttonId_2){
-												case 'resetConfirm':
+												case `resetConfirm+${mainInteractionId}`:
 													async function resetConfirmation(){
 														await buttonCollected_2.deferUpdate();
 
@@ -711,8 +748,6 @@ module.exports = {
 															})
 															return;
 														});
-														vehicleImages = [];
-
 														const resetEmbed = new MessageEmbed()
 														.setAuthor({
 															name: 'Vehicle Images Reset Successfully',
@@ -732,12 +767,14 @@ module.exports = {
 															new MessageButton()
 																.setLabel('Back')
 																.setStyle('SECONDARY')
-																.setCustomId('resetConfirmedBack'),
+																.setCustomId(`resetConfirmedBack+${mainInteractionId}`),
 															new MessageButton()
 																.setLabel('Exit')
 																.setStyle('DANGER')
-																.setCustomId('resetConfirmedExit'),
+																.setCustomId(`resetConfirmedExit+${mainInteractionId}`),
 														);
+														vehicleImages = [];
+
 														await interaction.editReply({
 															embeds: [resetEmbed],
 															components: [buttonsRow]
@@ -772,14 +809,14 @@ module.exports = {
 														};
 														const buttonId = buttonCollected.customId;
 														switch(buttonId){
-															case 'resetConfirmedBack':
+															case `resetConfirmedBack+${mainInteractionId}`:
 																async function resetConfirmedBack(){
 																	await buttonCollected.deferUpdate();
 																	return imagesOption();
 																};
 																resetConfirmedBack();
 																break;
-															case 'resetConfirmedExit':
+															case `resetConfirmedExit+${mainInteractionId}`:
 																async function resetConfirmedExit(){
 																	await buttonCollected.deferUpdate();
 																	await interaction.deleteReply();
@@ -791,7 +828,7 @@ module.exports = {
 													};
 													resetConfirmation();
 													break;
-												case 'resetDeny':
+												case `resetDeny+${mainInteractionId}`:
 													async function resetDenial(){
 														await buttonCollected_2.deferUpdate();
 														const resetEmbed = new MessageEmbed()
@@ -813,11 +850,11 @@ module.exports = {
 															new MessageButton()
 																.setLabel('Back')
 																.setStyle('SECONDARY')
-																.setCustomId('resetDeniedBack'),
+																.setCustomId(`resetDeniedBack+${mainInteractionId}`),
 															new MessageButton()
 																.setLabel('Exit')
 																.setStyle('DANGER')
-																.setCustomId('resetDeniedExit'),
+																.setCustomId(`resetDeniedExit+${mainInteractionId}`),
 														);
 														await interaction.editReply({
 															embeds: [resetEmbed],
@@ -835,14 +872,14 @@ module.exports = {
 														};
 														const buttonId = buttonCollected.customId;
 														switch(buttonId){
-															case 'resetConfirmedBack':
+															case `resetConfirmedBack+${mainInteractionId}`:
 																async function resetDeniedBack(){
 																	await buttonCollected.deferUpdate();
 																	return imagesOption();
 																};
 																resetDeniedBack();
 																break;
-															case 'resetConfirmedExit':
+															case `resetConfirmedExit+${mainInteractionId}`:
 																async function resetDeniedExit(){
 																	await buttonCollected.deferUpdate();
 																	await interaction.deleteReply();
@@ -854,14 +891,14 @@ module.exports = {
 													};
 													resetDenial();
 													break;
-												case 'resetBack':
+												case `resetBack+${mainInteractionId}`:
 													async function resetGoBack(){
 														await buttonCollected_2.deferUpdate();
 														return imagesOption();
 													};
 													resetGoBack();
 													break;
-												case 'resetExit':
+												case `resetExit+${mainInteractionId}`:
 													async function resetExit(){
 														await buttonCollected_2.deferUpdate();
 														await interaction.deleteReply();
@@ -872,14 +909,14 @@ module.exports = {
 										};
 										resetImageOption();
 										break;
-									case 'backImage':
+									case `backImage+${mainInteractionId}`:
 										async function backToMenuFromImageOption(){
 											if(!buttonCollected.deferred) await buttonCollected.deferUpdate();
 											return settingsDashboard();
 										};
 										backToMenuFromImageOption();
 										break;
-									case 'exitImage':
+									case `exitImage+${mainInteractionId}`:
 										async function exitImageOption(){
 											if(!buttonCollected.deferred) await buttonCollected.deferUpdate();
 											await interaction.deleteReply();
@@ -891,7 +928,7 @@ module.exports = {
 							};
 							imagesOption();
 							break;
-						case "description_option":
+						case `description_option+${mainInteractionId}`:
 							async function descriptionOption(){
 								if(!menuCollectedData.deferred) await menuCollectedData.deferUpdate();
 								const descriptionOptionEmbed = new MessageEmbed()
@@ -908,20 +945,20 @@ module.exports = {
 									iconURL: footerIcon
 								});
 								const setDescriptionButton = new MessageButton()
-								.setCustomId('setDescription')
+								.setCustomId(`setDescription+${mainInteractionId}`)
 								.setLabel('Set Description')
 								.setStyle('SUCCESS');
 								const resetDescriptionButton = new MessageButton()
-								.setCustomId('resetDescription')
+								.setCustomId(`resetDescription+${mainInteractionId}`)
 								.setLabel('Reset')
 								.setStyle('PRIMARY')
 								.setDisabled(true);
 								const backDescriptionButton = new MessageButton()
-								.setCustomId('backDescription')
+								.setCustomId(`backDescription+${mainInteractionId}`)
 								.setLabel('Back')
 								.setStyle('SECONDARY');
 								const exitDescriptionButton = new MessageButton()
-								.setCustomId('exitDescription')
+								.setCustomId(`exitDescription+${mainInteractionId}`)
 								.setLabel('Exit')
 								.setStyle('DANGER');
 
@@ -948,7 +985,7 @@ module.exports = {
 								};
 								const buttonId = buttonCollected.customId;
 								switch(buttonId){
-									case 'setDescription':
+									case `setDescription+${mainInteractionId}`:
 										async function setDescription(){
 											if(![2,3,4].includes(premiumTier) && !premiumUser){
 												const {advertEmbed, buttonsRow} = patreonAdvertEmbed(initiatorAvatar, 'Patreon Exclusive Feature', 'Support us on patreon and be able to showcase your vehicle with descriptions!', footerIcon, footerText)
@@ -960,10 +997,10 @@ module.exports = {
 												return settingsDashboard();
 											};
 											const modal = new Modal()
-											.setCustomId('descriptionModal')
+											.setCustomId(`descriptionModal+${mainInteractionId}`)
 											.setTitle('Garage Settings');
 											const vehicleDescriptionInput = new TextInputComponent()
-											.setCustomId('vehicleDescriptionInput')
+											.setCustomId(`vehicleDescriptionInput+${mainInteractionId}`)
 											.setLabel("Vehicle Description")
 											.setStyle('PARAGRAPH')
 											.setMinLength(30)
@@ -976,7 +1013,7 @@ module.exports = {
 											await buttonCollected.showModal(modal);
 											buttonCollected.awaitModalSubmit({filter: modalFilter, time: 300000 }) //
 											.then(async modalResponse => {
-												const providedVehicleDescription = modalResponse.fields.getTextInputValue('vehicleDescriptionInput');
+												const providedVehicleDescription = modalResponse.fields.getTextInputValue(`vehicleDescriptionInput+${mainInteractionId}`);
 												await modalResponse.deferUpdate();
 												await garageSchema.updateOne({guildId: guildId, userId: initiatorId, vehicle: vehicleName }, {$set: {vehicleDescription: providedVehicleDescription }})
 												.catch(async e => {
@@ -1008,11 +1045,11 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('descriptionConfirmedBack'),
+													.setCustomId(`descriptionConfirmedBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('descriptionConfirmedExit'),
+													.setCustomId(`descriptionConfirmedExit+${mainInteractionId}`),
 												);
 												await interaction.editReply({
 													embeds: [confirmationEmbed],
@@ -1048,14 +1085,14 @@ module.exports = {
 												};
 												const buttonId = buttonCollected.customId;
 												switch(buttonId){
-													case 'descriptionConfirmedBack':
+													case `descriptionConfirmedBack+${mainInteractionId}`:
 														async function descriptionBack(){
 															await buttonCollected.deferUpdate();
 															return settingsDashboard();
 														};
 														descriptionBack();
 														break;
-													case 'descriptionConfirmedExit':
+													case `descriptionConfirmedExit+${mainInteractionId}`:
 														async function descriptionExit(){
 															await buttonCollected.deferUpdate();
 															await interaction.editReply({
@@ -1078,7 +1115,7 @@ module.exports = {
 										};
 										setDescription()
 										break;
-									case 'resetDescription':
+									case `resetDescription+${mainInteractionId}`:
 										async function resetDescription(){
 											const descriptionResetOptionEmbed = new MessageEmbed()
 											.setAuthor({
@@ -1099,19 +1136,19 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Confirm')
 													.setStyle('SUCCESS')
-													.setCustomId('confirmDescriptionReset'),
+													.setCustomId(`confirmDescriptionReset+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Deny')
 													.setStyle('DANGER')
-													.setCustomId('denyDescriptionReset'),
+													.setCustomId(`denyDescriptionReset+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('resetDescriptionBack'),
+													.setCustomId(`resetDescriptionBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('resetDescriptionExit'),
+													.setCustomId(`resetDescriptionExit+${mainInteractionId}`),
 											);
 											await interaction.editReply({
 												embeds: [descriptionResetOptionEmbed],
@@ -1131,7 +1168,7 @@ module.exports = {
 											};
 											const buttonId = buttonCollected.customId;
 											switch(buttonId){
-												case 'confirmDescriptionReset':
+												case `confirmDescriptionReset+${mainInteractionId}`:
 													async function descriptionResetConfirmation(){
 														await buttonCollected.deferUpdate();
 														await garageSchema.updateOne({guildId: guildId, userId: initiatorId, vehicle: vehicleName }, {$set: {vehicleDescription: null }})
@@ -1162,11 +1199,11 @@ module.exports = {
 															new MessageButton()
 																.setLabel('Back')
 																.setStyle('SECONDARY')
-																.setCustomId('resetDescriptionConfirmedBack'),
+																.setCustomId(`resetDescriptionConfirmedBack+${mainInteractionId}`),
 															new MessageButton()
 																.setLabel('Exit')
 																.setStyle('DANGER')
-																.setCustomId('resetDescriptionConfirmedExit'),
+																.setCustomId(`resetDescriptionConfirmedExit+${mainInteractionId}`),
 														);
 
 														await interaction.editReply({
@@ -1202,14 +1239,14 @@ module.exports = {
 														};
 														const buttonId = buttonCollected.customId;
 														switch(buttonId){
-															case 'resetDescriptionConfirmedBack':
+															case `resetDescriptionConfirmedBack+${mainInteractionId}`:
 																async function resetConfirmedBack(){
 																	await buttonCollected.deferUpdate();
 																	return descriptionOption();
 																};
 																resetConfirmedBack();
 																break;
-															case 'resetDescriptionConfirmedExit':
+															case `resetDescriptionConfirmedExit+${mainInteractionId}`:
 																async function resetConfirmedExit(){
 																	await buttonCollected.deferUpdate();
 																	await interaction.deleteReply();
@@ -1221,7 +1258,7 @@ module.exports = {
 													};
 													descriptionResetConfirmation();
 													break;
-												case 'denyDescriptionReset':
+												case `denyDescriptionReset+${mainInteractionId}`:
 													async function denyDescriptionReset(){
 														const descriptionResetDenyEmbed = new MessageEmbed()
 														.setAuthor({
@@ -1242,11 +1279,11 @@ module.exports = {
 															new MessageButton()
 																.setLabel('Back')
 																.setStyle('SECONDARY')
-																.setCustomId('descriptionResetDeniedBack'),
+																.setCustomId(`descriptionResetDeniedBack+${mainInteractionId}`),
 															new MessageButton()
 																.setLabel('Exit')
 																.setStyle('DANGER')
-																.setCustomId('descriptionResetDeniedExit'),
+																.setCustomId(`descriptionResetDeniedExit+${mainInteractionId}`),
 														);
 														await interaction.editReply({
 															embeds: [descriptionResetDenyEmbed],
@@ -1264,14 +1301,14 @@ module.exports = {
 														};
 														const buttonId = buttonCollected.customId;
 														switch(buttonId){
-															case 'descriptionResetDeniedBack':
+															case `descriptionResetDeniedBack+${mainInteractionId}`:
 																async function descriptionResetDeniedBack(){
 																	await buttonCollected.deferUpdate();
 																	return descriptionOption();
 																};
 																descriptionResetDeniedBack();
 																break;
-															case 'descriptionResetDeniedExit':
+															case `descriptionResetDeniedExit+${mainInteractionId}`:
 																async function descriptionResetDeniedExit(){
 																	await buttonCollected.deferUpdate();
 																	await interaction.deleteReply();
@@ -1282,27 +1319,32 @@ module.exports = {
 													};
 													denyDescriptionReset();
 													break;
-												case 'resetDescriptionBack':
+												case `resetDescriptionBack+${mainInteractionId}`:
 													async function resetDescriptionBack(){
 														await buttonCollected.deferUpdate();
 														return descriptionOption();
 													};
 													resetDescriptionBack();
 													break;
-												case 'resetDescriptionExit':
+												case `resetDescriptionExit+${mainInteractionId}`:
+													async function resetDescriptionExit(){
+														await buttonCollected.deferUpdate();
+														await interaction.deleteReply();
+													};
+													resetDescriptionExit();
 													break;
 											}
 										};
 										resetDescription();
 										break;
-									case 'backDescription':
+									case `backDescription+${mainInteractionId}`:
 										async function backDescription(){
 											await buttonCollected.deferUpdate();
 											return settingsDashboard();
 										};
 										backDescription();
 										break;
-									case 'exitDescription':
+									case `exitDescription+${mainInteractionId}`:
 										async function exitDescription(){
 											await buttonCollected.deferUpdate();
 											await interaction.deleteReply();
@@ -1314,7 +1356,7 @@ module.exports = {
 							};
 							descriptionOption()
 							break
-						case "garageIcon_option":
+						case `garageIcon_option+${mainInteractionId}`:
 							async function garageIconOption(){
 								if(!menuCollectedData.deferred) await menuCollectedData.deferUpdate();
 								const garageIconDashboard = new MessageEmbed()
@@ -1330,20 +1372,20 @@ module.exports = {
 									iconURL: footerIcon
 								});
 								const setIconButton = new MessageButton()
-								.setCustomId('setGarageIcon')
+								.setCustomId(`setGarageIcon+${mainInteractionId}`)
 								.setLabel('Set Icon')
 								.setStyle('SUCCESS');
 								const resetIconButton = new MessageButton()
-								.setCustomId('resetGarageIcon')
+								.setCustomId(`resetGarageIcon+${mainInteractionId}`)
 								.setLabel('Reset')
 								.setStyle('PRIMARY')
 								.setDisabled(true);
 								const backButton = new MessageButton()
-								.setCustomId('garageIconBack')
+								.setCustomId(`garageIconBack+${mainInteractionId}`)
 								.setLabel('Back')
 								.setStyle('SECONDARY')								
 								const exitButton = new MessageButton()
-								.setCustomId('garageIconExit')
+								.setCustomId(`garageIconExit+${mainInteractionId}`)
 								.setLabel('Exit')
 								.setStyle('DANGER');
 								if(garageThumbnail) resetIconButton.setDisabled(false);
@@ -1367,7 +1409,7 @@ module.exports = {
 								const buttonId = buttonCollected.customId;
 
 								switch(buttonId){
-									case 'setGarageIcon':
+									case `setGarageIcon+${mainInteractionId}`:
 										async function setGarageIcon(){
 											await buttonCollected.deferUpdate();
 											const addGarageIconPrompt = new MessageEmbed()
@@ -1389,11 +1431,11 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('uploadIconBack'),
+													.setCustomId(`uploadIconBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('uploadIconExit'),
+													.setCustomId(`uploadIconExit+${mainInteractionId}`),
 											);
 											await interaction.editReply({
 												embeds: [addGarageIconPrompt],
@@ -1414,9 +1456,9 @@ module.exports = {
 												whetherButtonCollected = true;
 												await collected.deferUpdate();
 												const buttonId = collected.customId;
-												if(buttonId === 'uploadIconBack'){
+												if(buttonId === `uploadIconBack+${mainInteractionId}`){
 													return settingsDashboard();
-												}else if(buttonId === 'uploadIconExit'){
+												}else if(buttonId === `uploadIconExit+${mainInteractionId}`){
 													await interaction.deleteReply();
 												};
 											});
@@ -1480,11 +1522,11 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('iconUploadConfirmedBack'),
+													.setCustomId(`iconUploadConfirmedBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('iconUploadConfirmedExit'),
+													.setCustomId(`iconUploadConfirmedExit+${mainInteractionId}`),
 												);
 												await interaction.editReply({
 													embeds: [confirmationEmbed],
@@ -1523,14 +1565,16 @@ module.exports = {
 												};
 												const buttonId = buttonCollected.customId;
 												switch(buttonId){
-													case 'iconUploadConfirmedBack':
-														function iconUploadConfirmedBack(){
+													case `iconUploadConfirmedBack+${mainInteractionId}`:
+														async function iconUploadConfirmedBack(){
+															await buttonCollected.deferUpdate();
 															return settingsDashboard();
 														};
 														iconUploadConfirmedBack();
 														break;
-													case 'iconUploadConfirmedExit':
+													case `iconUploadConfirmedExit+${mainInteractionId}`:
 														async function iconUploadConfirmedExit(){
+															await buttonCollected.deferUpdate();
 															await interaction.editReply({
 																embeds: [confirmationEmbed],
 																components: []
@@ -1543,7 +1587,7 @@ module.exports = {
 										};
 										setGarageIcon();
 										break;
-									case 'resetGarageIcon':
+									case `resetGarageIcon+${mainInteractionId}`:
 										async function resetGarageIcon(){
 											await buttonCollected.deferUpdate();
 											const garageIconReset = new MessageEmbed()
@@ -1565,11 +1609,11 @@ module.exports = {
 												new MessageButton()
 													.setLabel('Back')
 													.setStyle('SECONDARY')
-													.setCustomId('resetIconBack'),
+													.setCustomId(`resetIconBack+${mainInteractionId}`),
 												new MessageButton()
 													.setLabel('Exit')
 													.setStyle('DANGER')
-													.setCustomId('resetIconExit'),
+													.setCustomId(`resetIconExit+${mainInteractionId}`),
 											);
 											await interaction.editReply({
 												embeds: [garageIconReset],
@@ -1589,14 +1633,14 @@ module.exports = {
 											};
 											const buttonId = buttonCollected.customId;
 											switch(buttonId){
-												case 'resetIconBack':
+												case `resetIconBack+${mainInteractionId}`:
 													async function resetIconBack(){
 														await buttonCollected.deferUpdate();
 														return settingsDashboard();
 													};
 													resetIconBack();
 													break;
-												case 'resetIconExit':
+												case `resetIconExit+${mainInteractionId}`:
 													async function resetIconExit(){
 														await buttonCollected.deferUpdate();
 														await interaction.deleteReply();
@@ -1607,14 +1651,14 @@ module.exports = {
 										};
 										resetGarageIcon();
 										break;
-									case 'garageIconBack':
+									case `garageIconBack+${mainInteractionId}`:
 										async function garageIconBack(){
 											await buttonCollected.deferUpdate();
 											return settingsDashboard();
 										};
 										garageIconBack();
 										break;
-									case 'garageIconExit':
+									case `garageIconExit+${mainInteractionId}`:
 										async function garageIconExit(){
 											await buttonCollected.deferUpdate();
 											await interaction.deleteReply();
@@ -1626,18 +1670,369 @@ module.exports = {
 							};
 							garageIconOption();
 							break;
-						case "embedColor_option":
+						case `embedColor_option+${mainInteractionId}`:
 							async function embedColorOption(){
 								if(!menuCollectedData.deferred) await menuCollectedData.deferUpdate();
-								await interaction.followUp({
-									content: 'Releasing tomorrow.',
-									ephemeral: true
+								const embedColorDashboard = new MessageEmbed()
+								.setAuthor({
+									name: 'Garage Settings Dashboard - Embed Color Config',
+									iconURL: initiatorAvatar
+								})
+								.setDescription('On this dashboard, You can configure your embed color!')
+								.addField('Vehicle', `[${vehicleName}](${verificationImage})`, true)
+								.addField('Owner', initiatorTag, true)
+								.addField('Note', '**Global -** This will be applicable everywhere\n**Vehicle -** This will only apply to the vehicle you selected.')
+								.setColor(embedColor)
+								.setImage(garageEmbedColorExample)
+								.setFooter({
+									text: footerText,
+									iconURL: footerIcon
 								});
-								return settingsDashboard();
+								const globalColorButton = new MessageButton()
+								.setCustomId(`globalColor+${mainInteractionId}`)
+								.setLabel('Global')
+								.setStyle('SUCCESS');
+								const vehicleColorButton = new MessageButton()
+								.setCustomId(`vehicleColor+${mainInteractionId}`)
+								.setLabel('Vehicle')
+								.setStyle('PRIMARY');
+								const backColorButton = new MessageButton()
+								.setCustomId(`backColor+${mainInteractionId}`)
+								.setLabel('Back')
+								.setStyle('SECONDARY');
+								const exitColorButton = new MessageButton()
+								.setCustomId(`exitColor+${mainInteractionId}`)
+								.setLabel('Exit')
+								.setStyle('DANGER');
+
+								const buttonRow = new MessageActionRow()
+								.addComponents(globalColorButton, vehicleColorButton, backColorButton, exitColorButton)
+								await interaction.editReply({
+									embeds: [embedColorDashboard],
+									components: [buttonRow]
+								});
+								
+								const buttonCollected = await interaction.channel.awaitMessageComponent({ filter:buttonFilter, componentType: 'BUTTON', time: 120000, max: 1 })
+								.catch(e => {});
+								if(!buttonCollected){
+									await interaction.followUp({
+										embeds: [errorEmbed('No response was received, Ending operation.', initiatorAvatar)],
+										ephemeral: true
+									});
+									await interaction.deleteReply();
+									return;
+								};
+								const buttonId = buttonCollected.customId;
+								switch(buttonId){
+									case `globalColor+${mainInteractionId}`:
+										async function globalColor(){
+											await buttonCollected.deferUpdate();
+											const globalColorEmbed = new MessageEmbed()
+											.setAuthor({
+												name: 'Global Color Customisation',
+												iconURL: initiatorAvatar
+											})
+											.setDescription('Please enter the **hex code** to set your global embed color.\nExample: `#FF0000`\nFind Hex Colors:- [Click Here!](https://htmlcolorcodes.com/)')
+											.addField('Vehicle', `[${vehicleName}](${verificationImage})`, true)
+											.addField('Owner', initiatorTag, true)
+											.setColor(embedColor)
+											.setFooter({
+												text: footerText,
+												iconURL: footerIcon
+											});
+											const buttonsRow = new MessageActionRow()
+											.addComponents(
+												new MessageButton()
+													.setLabel('Back')
+													.setStyle('SECONDARY')
+													.setCustomId(`globalColorBack+${mainInteractionId}`),
+												new MessageButton()
+													.setLabel('Exit')
+													.setStyle('DANGER')
+													.setCustomId(`globalColorExit+${mainInteractionId}`),
+											);
+											await interaction.editReply({
+												embeds: [globalColorEmbed],
+												components: [buttonsRow]
+											});
+											let whetherButtonCollected = false;
+											const buttonCollector = interaction.channel.createMessageComponentCollector({
+												filter: buttonFilter,
+												max: 1,
+												componentType: 'BUTTON',
+												time: 300000
+											});
+											const messageCollector = interaction.channel.createMessageCollector({ filter: messageFilter, time: 300000, max: 1});
+
+											buttonCollector.on('end', async (allCollected) => {
+												const collected = allCollected?.first();
+												if(!collected) return;
+												whetherButtonCollected = true;
+												await collected.deferUpdate();
+												const buttonId = collected.customId;
+												if(buttonId === `globalColorBack+${mainInteractionId}`){
+													return settingsDashboard();
+												}else if(buttonId === `globalColorExit+${mainInteractionId}`){
+													await interaction.deleteReply();
+												};
+											});
+											
+											messageCollector.on('end', async (allCollected) => {
+												const collected = allCollected.first();
+												if(!collected){
+													if(whetherButtonCollected){
+														return;
+													}else{
+														await interaction.deleteReply();
+													};
+												};
+												buttonCollector.stop();
+												const messageContent = collected.content.replace(/#/gi, '');
+												const whetherHex = isHexColor(messageContent, 'full');
+												if(!whetherHex){
+													await interaction.followUp({
+														embeds: [errorEmbed('The hex code you entered is wrong!\nIt must be in the hex format such as `#FF0000`')],
+														ephemeral: true
+													});
+													return embedColorOption();
+												};
+												await userProfileSchema.updateOne({userId: initiatorId}, {$set: {embedColor: messageContent }})
+												.catch(async e => {
+													await interaction.editReply({
+														embeds: [errorEmbed(e, initiatorAvatar)],
+														components: []
+													})
+													return;
+												});
+												embedColor = messageContent;
+												const confirmationEmbed = new MessageEmbed()
+												.setAuthor({
+													name: 'Global Embed Color Set Successfully',
+													iconURL: initiatorAvatar
+												})
+												.setDescription('Your embed color has been successfully updated globally!')
+												.setColor(messageContent)
+												.addField('Vehicle', `[${vehicleName}](${verificationImage})`, true)
+												.addField('Owner', initiatorTag, true)
+												.setFooter({
+													text: footerText,
+													iconURL: footerIcon
+												});
+												const buttonsRow = new MessageActionRow()
+												.addComponents(
+												new MessageButton()
+													.setLabel('Back')
+													.setStyle('SECONDARY')
+													.setCustomId(`globalEmbedColorConfirmedBack+${mainInteractionId}`),
+												new MessageButton()
+													.setLabel('Exit')
+													.setStyle('DANGER')
+													.setCustomId(`globalEmbedColorConfirmedExit+${mainInteractionId}`),
+												);
+												await interaction.editReply({
+													embeds: [confirmationEmbed],
+													components: [buttonsRow]
+												});	
+
+												const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+												.catch(e => {
+
+												});
+												if(!buttonCollected){
+													await interaction.editReply({
+														embeds: [confirmationEmbed],
+														components: []
+													});
+													return;
+												};
+												const buttonId = buttonCollected.customId;
+												switch(buttonId){
+												case `globalEmbedColorConfirmedBack+${mainInteractionId}`:
+													async function globalEmbedColorConfirmedBack(){
+														await buttonCollected.deferUpdate();
+														return settingsDashboard();
+													};
+													globalEmbedColorConfirmedBack();
+													break;
+												case `globalEmbedColorConfirmedExit+${mainInteractionId}`:
+													async function globalEmbedColorConfirmedExit(){
+														await buttonCollected.deferUpdate();
+														await interaction.editReply({
+															embeds: [confirmationEmbed],
+															components: []
+														});
+													};
+													globalEmbedColorConfirmedExit();
+														break;
+												};
+											});
+										};
+										globalColor();
+										break;
+									case `vehicleColor+${mainInteractionId}`:
+										async function vehicleColor(){
+											await buttonCollected.deferUpdate();
+											const vehicleColorEmbed = new MessageEmbed()
+											.setAuthor({
+												name: 'Vehicle Color Customisation',
+												iconURL: initiatorAvatar
+											})
+											.setDescription('Please enter the **hex code** to set your vehicle embed color.\nExample: `#FF0000`\nFind Hex Colors:- [Click Here!](https://htmlcolorcodes.com/)')
+											.addField('Vehicle', `[${vehicleName}](${verificationImage})`, true)
+											.addField('Owner', initiatorTag, true)
+											.setColor(embedColor)
+											.setFooter({
+												text: footerText,
+												iconURL: footerIcon
+											});
+											const buttonsRow = new MessageActionRow()
+											.addComponents(
+												new MessageButton()
+													.setLabel('Back')
+													.setStyle('SECONDARY')
+													.setCustomId(`vehicleColorBack+${mainInteractionId}`),
+												new MessageButton()
+													.setLabel('Exit')
+													.setStyle('DANGER')
+													.setCustomId(`vehicleColorExit+${mainInteractionId}`),
+											);
+											await interaction.editReply({
+												embeds: [vehicleColorEmbed],
+												components: [buttonsRow]
+											});
+											let whetherButtonCollected = false;
+											const buttonCollector = interaction.channel.createMessageComponentCollector({
+												filter: buttonFilter,
+												max: 1,
+												componentType: 'BUTTON',
+												time: 300000
+											});
+											const messageCollector = interaction.channel.createMessageCollector({ filter: messageFilter, time: 300000, max: 1});
+
+											buttonCollector.on('end', async (allCollected) => {
+												const collected = allCollected?.first();
+												if(!collected) return;
+												whetherButtonCollected = true;
+												await collected.deferUpdate();
+												const buttonId = collected.customId;
+												if(buttonId === `vehicleColorBack+${mainInteractionId}`){
+													return settingsDashboard();
+												}else if(buttonId === `vehicleColorExit+${mainInteractionId}`){
+													await interaction.deleteReply();
+												};
+											});
+											
+											messageCollector.on('end', async (allCollected) => {
+												const collected = allCollected.first();
+												if(!collected){
+													if(whetherButtonCollected){
+														return;
+													}else{
+														await interaction.deleteReply();
+													};
+												};
+												buttonCollector.stop();
+												const messageContent = collected.content.replace(/#/gi, '');
+												const whetherHex = isHexColor(messageContent, 'full');
+												if(!whetherHex){
+													await interaction.followUp({
+														embeds: [errorEmbed('The hex code you entered is wrong!\nIt must be in the hex format such as `#FF0000`')],
+														ephemeral: true
+													});
+													return embedColorOption();
+												};
+												await garageSchema.updateOne({guildId: guildId, userId: initiatorId, vehicle: vehicleName }, {$set: {embedColor: messageContent }})
+												.catch(async e => {
+													await interaction.editReply({
+														embeds: [errorEmbed(e, initiatorAvatar)],
+														components: []
+													})
+													return;
+												});
+
+												const confirmationEmbed = new MessageEmbed()
+												.setAuthor({
+													name: 'Vehicle Embed Color Set Successfully',
+													iconURL: initiatorAvatar
+												})
+												.setDescription('Your vehicle embed color has been successfully updated!')
+												.setColor(messageContent)
+												.addField('Vehicle', `[${vehicleName}](${verificationImage})`, true)
+												.addField('Owner', initiatorTag, true)
+												.setFooter({
+													text: footerText,
+													iconURL: footerIcon
+												});
+												const buttonsRow = new MessageActionRow()
+												.addComponents(
+												new MessageButton()
+													.setLabel('Back')
+													.setStyle('SECONDARY')
+													.setCustomId(`vehicleEmbedColorConfirmedBack+${mainInteractionId}`),
+												new MessageButton()
+													.setLabel('Exit')
+													.setStyle('DANGER')
+													.setCustomId(`vehicleEmbedColorConfirmedExit+${mainInteractionId}`),
+												);
+												await interaction.editReply({
+													embeds: [confirmationEmbed],
+													components: [buttonsRow]
+												});	
+
+												const buttonCollected = await interaction.channel.awaitMessageComponent({ filter: buttonFilter, componentType: 'BUTTON', time: 60000, max: 1 })
+												.catch(e => {
+
+												});
+												if(!buttonCollected){
+													await interaction.editReply({
+														embeds: [confirmationEmbed],
+														components: []
+													});
+													return;
+												};
+												const buttonId = buttonCollected.customId;
+												switch(buttonId){
+												case `vehicleEmbedColorConfirmedBack+${mainInteractionId}`:
+													async function vehicleEmbedColorConfirmedBack(){
+														await buttonCollected.deferUpdate();
+														return settingsDashboard();
+													};
+													vehicleEmbedColorConfirmedBack();
+													break;
+												case `vehicleEmbedColorConfirmedExit+${mainInteractionId}`:
+													async function vehicleEmbedColorConfirmedExit(){
+														await buttonCollected.deferUpdate();
+														await interaction.editReply({
+															embeds: [confirmationEmbed],
+															components: []
+														});
+													};
+													vehicleEmbedColorConfirmedExit();
+														break;
+												};
+											});
+										};
+										vehicleColor();
+										break;
+									case `backColor+${mainInteractionId}`:
+										async function backColor(){
+											await buttonCollected.deferUpdate();
+											return settingsDashboard();
+										};
+										backColor();
+										break;
+									case `exitColor+${mainInteractionId}`:
+										async function exitColor(){
+											await buttonCollected.deferUpdate();
+											await interaction.deleteReply();
+										};
+										exitColor()
+										break;
+								};
 							};
 							embedColorOption();
 							break;
-						case "exit_option":
+						case `exit_option+${mainInteractionId}`:
 							async function exitOption(){
 								if(!menuCollectedData.deferred) await menuCollectedData.deferUpdate();
 								await interaction.deleteReply();

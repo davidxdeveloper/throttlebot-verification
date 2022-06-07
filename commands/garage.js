@@ -1,7 +1,7 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { obtainGuildProfile, defaultEmbedColor, obtainAllUserVehicles, obtainUserProfile } = require('../modules/database.js');
-const {  errorEmbed, removeNonIntegers } = require('../modules/utility.js');
+const {  errorEmbed, removeNonIntegers, tipsEmbed } = require('../modules/utility.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -57,22 +57,20 @@ module.exports = {
 		//Misc
 		const messageFilter = (m) => m.author.id === initiatorId;
 		const embedColor = await defaultEmbedColor(userId);
+		const mainInteractionId = interaction.id;
 
 		//Garage data for specified user.
 		const garageData = await obtainAllUserVehicles(userId, guildToFetchInfoFrom);
 
 		if(!garageData || garageData?.length === 0){
 			let errEmbed;
-			let ephemeralStatus = false;
 			if(userId === initiatorId){
-				errEmbed = errorEmbed(`**${userName},**\nYou do not have any verified rides! Please have them verified first by using the \`/verify\` command for them to show up in your garage.`)
-				ephemeralStatus = true
+				errEmbed = errorEmbed(`**${userName},**\nYou do not have any verified rides, Please visit the <#${guideChannelId}> channel to get started!`, initiatorAvatar)
 			}else{
 				errEmbed = errorEmbed(`**${userName}** has no verified rides to display.`,initiatorAvatar)
 			};
 			await interaction.editReply({
-				embeds:[errEmbed],
-				ephemeral: ephemeralStatus
+				embeds:[errEmbed]
 			});
 			return;
 		};
@@ -112,10 +110,17 @@ module.exports = {
 			const vehicleDescription = selectedVehicle.vehicleDescription;
 			const vehicleEmbedColor = selectedVehicle.embedColor || embedColor;
 			if(!vehicleImages || vehicleImages.length === 0){
-				await interaction.followUp({
-					content: `There are no images to display for **${vehicleName}**`,
-					ephemeral: true
-				});
+				if(userId === initiatorId){
+					await interaction.followUp({
+						content: `You have not uploaded any images for your vehicle **${vehicleName}.**\nPlease visit the designated bot commands channel and use the \`/settings\` command.`,
+						ephemeral: true
+					});
+				}else{
+					await interaction.followUp({
+						content: `There are no images to display for **${vehicleName}**`,
+						ephemeral: true
+					});
+				}
 				garageEmbed.setDescription(garageOutput.join('\n'))
 				await interaction.editReply({
 					embeds: [garageEmbed]
@@ -137,12 +142,12 @@ module.exports = {
 			let componentsArray = [];
 			const row = new MessageActionRow() 
 			const previousButton = new MessageButton()
-			.setCustomId(`previousVehicleImage`)
+			.setCustomId(`previousVehicleImage+${mainInteractionId}`)
 			.setLabel('Previous')
 			.setStyle('PRIMARY')
 			.setDisabled(true);
 			const nextButton = new MessageButton()
-			.setCustomId(`nextVehicleImage`)
+			.setCustomId(`nextVehicleImage+${mainInteractionId}`)
 			.setLabel('Next')
 			.setStyle('PRIMARY');
 			if(vehicleImages.length > 1){
@@ -154,18 +159,24 @@ module.exports = {
 				components: componentsArray
 			});
 
+			if(userId === initiatorId && vehicleImages.length === 1){
+				await interaction.followUp({
+					embeds: [tipsEmbed('You can now upload 5 images of your vehicle by default!\nVisit the dedicated bot commands channel and use the command **`/settings`** to make changes to your vehicles.')],
+					ephemeral: true
+				});
+			};
 			//Button collector to manage the multiple images if it exists.
 			if(vehicleImages.length > 1){
 				let pages = vehicleImages;
 				let page = 1;
-
-				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 300000 });
+				//1800000ms = 30 minutes.
+				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 1800000 }); 
 				buttonCollector.on('collect', async (collected) => {
 					await collected.deferUpdate();
 					const buttonId = collected.customId;
 					
 					switch(buttonId){
-						case 'nextVehicleImage':
+						case `nextVehicleImage+${mainInteractionId}`:
 							async function nextImage(){
 								page++;
 								vehicleEmbed
@@ -187,7 +198,7 @@ module.exports = {
 							};
 							nextImage();
 							break;
-						case 'previousVehicleImage':
+						case `previousVehicleImage+${mainInteractionId}`:
 							async function previousImage(){
 								page--;
 								vehicleEmbed

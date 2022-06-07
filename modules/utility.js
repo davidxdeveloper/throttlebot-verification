@@ -16,6 +16,7 @@ const patreonBlueColor = '#052D49';
 const patreonBanner = 'https://cdn.discordapp.com/attachments/975485952325726278/980910367540641852/patreonBanner.png';
 const patreonBannerLarge = 'https://cdn.discordapp.com/attachments/975485952325726278/980910391737614346/patreonBannerLarge.png';
 const garageIconExample = 'https://cdn.discordapp.com/attachments/975485952325726278/982221023321665546/Garage_Icon.png';
+const garageEmbedColorExample = 'https://cdn.discordapp.com/attachments/975485952325726278/983741574125076490/embed_color.png'
 const botInvite = 'https://discord.com/api/oauth2/authorize?client_id=851411747641884712&permissions=157035129920&scope=bot%20applications.commands';
 const botInviteAdmin = 'https://discord.com/api/oauth2/authorize?client_id=851411747641884712&permissions=8&scope=bot%20applications.commands';
 const supportServerInvite = 'https://discord.gg/Nh4A6HDZT4'
@@ -36,7 +37,7 @@ function removeNonIntegers(string){
 
 function errorEmbed(errMsg, useravatar = null, example = null, embedColor = '#ff6961', footerIcon = null, footerText = null){
     //A predefined error embed to use in case there's an error scenario.
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
     .setColor(embedColor)
     .setAuthor(
         {
@@ -50,6 +51,20 @@ function errorEmbed(errMsg, useravatar = null, example = null, embedColor = '#ff
 
     return embed;
 };
+
+function tipsEmbed(tipMsg, embedColor = '#FFFCFF'){
+    const embed = new MessageEmbed()
+    .setColor(embedColor)
+    .setAuthor(
+        {
+            name: "Throttle Tips",
+            iconURL: 'https://www.pngmart.com/files/6/Light-Bulb-PNG-File.png'
+        }
+    )
+    .setDescription(tipMsg);
+    return embed;
+}
+
 
 function isValidHttpUrl(string) {
     //Checks whether the provided string is a valid URL.
@@ -70,8 +85,7 @@ function patreonAdvertEmbed(avatar, title, description, footerIcon, footerText){
         name: title,
         iconURL: avatar
     })
-    .setDescription(description+'\nBy supporting, not only do you help with the development of the bot, your support allows us to keep the bot free for anyone to use and open source!')
-    .addField('Checkout Our Github', 'If you would like to support us in other ways, checkout our github page and [star the repository!](https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars)')
+    .setDescription(description+'\n\nBy supporting, not only do you help with the development of the bot, your support allows us to keep the bot free for anyone to use and [open source!](https://github.com/davidxdeveloper/throttlebot-verification/)')
     .setImage(patreonBanner)
     .setColor(patreonRedColor)
     .setFooter({
@@ -83,11 +97,7 @@ function patreonAdvertEmbed(avatar, title, description, footerIcon, footerText){
         new MessageButton()
             .setLabel('Patreon')
             .setStyle('LINK')
-            .setURL(patreonLink),
-        new MessageButton()
-            .setLabel('Github')
-            .setStyle('LINK')
-            .setURL(githubLink),
+            .setURL(patreonLink)
     );
     return {
         advertEmbed: patreonAdvertisementEmbed,
@@ -124,8 +134,10 @@ module.exports = {
     patreonT4,
     patreonDefault,
     supportServerId,
+    garageEmbedColorExample,
     removeNonIntegers,
     errorEmbed,
     isValidHttpUrl,
-    patreonAdvertEmbed
+    patreonAdvertEmbed,
+    tipsEmbed,
 };

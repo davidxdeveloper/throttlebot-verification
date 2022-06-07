@@ -217,7 +217,7 @@ module.exports = {
                         .addField('Vehicle', vehicleName, true)
                         .addField('Owner', `${applicantTag} | <@${applicantId}>`,true)
                         .addField('Decision','Approved Verification | You can check out your vehicle in your garage now using the `/garage` command.')
-                        .addField('Note','You can now keep images to your rides, configure your garage using the `/settings` command.')
+                        .addField('Note','You can now keep images to your rides, configure your garage using the `/settings` command in the designated bot commands channel.')
                         .setThumbnail(vehicleImageURL)
                         .setColor(greenColor)
                         .setFooter({
