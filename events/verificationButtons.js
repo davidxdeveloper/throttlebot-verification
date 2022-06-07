@@ -199,7 +199,7 @@ module.exports = {
 
                         //Giving the verified vehicles role if configured.
                         if(roleToGive){
-                            await interaction.member.roles.add(roleToGive)
+                            await applicantData.roles.add(roleToGive)
                             .catch(async err => {
                                 await interaction.followUp({
                                     embeds: [errorEmbed(`I was unable to give the <@&${roleToGive}> to ${applicantTag}. - ${err}`, initiatorAvatar)]
