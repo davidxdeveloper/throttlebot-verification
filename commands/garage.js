@@ -169,8 +169,8 @@ module.exports = {
 			if(vehicleImages.length > 1){
 				let pages = vehicleImages;
 				let page = 1;
-				//1800000ms = 30 minutes.
-				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 1800000 }); 
+				//600000 = 10 minutes.
+				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 600000 }); 
 				buttonCollector.on('collect', async (collected) => {
 					await collected.deferUpdate();
 					const buttonId = collected.customId;

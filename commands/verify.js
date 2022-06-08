@@ -50,8 +50,9 @@ module.exports = {
 		const footerIcon = guildProfile.customFooterIcon || guildIcon;
 		const footerText = `${guildName} • Vehicle Verification`
 		//Misc
+		const mainInteractionId = interaction.id;
 		const embedColor = await defaultEmbedColor(initiatorId);
-		const buttonFilter = (ButtonInteraction) => ButtonInteraction.componentType === 'BUTTON' && ButtonInteraction.user.id === initiatorId && (ButtonInteraction.customId === 'confirmVerification' || ButtonInteraction.customId === 'denyVerification');
+		const buttonFilter = (ButtonInteraction) => ButtonInteraction.componentType === 'BUTTON' && ButtonInteraction.user.id === initiatorId && (ButtonInteraction.customId === `confirmVerification+${mainInteractionId}` || ButtonInteraction.customId === `denyVerification+${mainInteractionId}`) && ButtonInteraction.guild.id === guildId;
 		const todaysDate = moment.utc();
 		const verificationChannel = await interaction.member.guild.channels.fetch(verificationChannelId);
 		if(!verificationChannel){
@@ -153,11 +154,11 @@ module.exports = {
 			iconURL: footerIcon
 		});
 		const confirmButton = new MessageButton()
-		.setCustomId('confirmVerification')
+		.setCustomId(`confirmVerification+${mainInteractionId}`)
 		.setLabel('Confirm')
 		.setStyle('SUCCESS');
 		const denyButton = new MessageButton()
-		.setCustomId('denyVerification')
+		.setCustomId(`denyVerification+${mainInteractionId}`)
 		.setLabel('Deny')
 		.setStyle('DANGER');
 		const row = new MessageActionRow()
@@ -183,7 +184,7 @@ module.exports = {
 			};
 			await collectedData.deferUpdate();
 			const buttonId = collectedData.customId;
-			if(buttonId === 'confirmVerification'){
+			if(buttonId === `confirmVerification+${mainInteractionId}`){
 				//send it to the verification channel
 				//handle err if verification channel does not exist
 				const vApplication = new MessageEmbed()

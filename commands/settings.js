@@ -153,7 +153,6 @@ module.exports = {
 						]),
 				);
 			
-			
 				await interaction.editReply({
 					embeds: [settingsDashboardEmbed],
 					components: [row]
