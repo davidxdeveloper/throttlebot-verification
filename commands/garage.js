@@ -172,12 +172,11 @@ module.exports = {
 				//600000 = 10 minutes.
 				const buttonCollector = interaction.channel.createMessageComponentCollector({ time: 600000 }); 
 				buttonCollector.on('collect', async (collected) => {
-					await collected.deferUpdate();
 					const buttonId = collected.customId;
-					
 					switch(buttonId){
 						case `nextVehicleImage+${mainInteractionId}`:
 							async function nextImage(){
+								await collected.deferUpdate();
 								page++;
 								vehicleEmbed
 								.setImage(pages[page - 1])
@@ -200,6 +199,7 @@ module.exports = {
 							break;
 						case `previousVehicleImage+${mainInteractionId}`:
 							async function previousImage(){
+								await collected.deferUpdate();
 								page--;
 								vehicleEmbed
 								.setImage(pages[page - 1])
