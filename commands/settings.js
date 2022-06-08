@@ -50,10 +50,10 @@ module.exports = {
 			const mainInteractionId = interaction.id;
 			let embedColor = await defaultEmbedColor(initiatorId);
 			//Filters
-			const messageFilter = (m) => m.author.id === initiatorId;
-			const menuFilter = (menuInteraction) => menuInteraction.componentType === 'SELECT_MENU' && menuInteraction.customId === 'settingsMenu' && menuInteraction.user.id === initiatorId;
-			const modalFilter = (modalInteraction) => modalInteraction.isModalSubmit() && modalInteraction.customId === 'descriptionModal' && modalInteraction.user.id === initiatorId;
-			const buttonFilter = i => i.user.id === initiatorId;
+			const messageFilter = (m) => m.author.id === initiatorId && m.guild.id === guildId;
+			const menuFilter = (menuInteraction) => menuInteraction.componentType === 'SELECT_MENU' && menuInteraction.customId === `settingsMenu+${mainInteractionId}` && menuInteraction.user.id === initiatorId && menuInteraction.guild.id === guildId;
+			const modalFilter = (modalInteraction) => modalInteraction.isModalSubmit() && modalInteraction.customId === `descriptionModal+${mainInteractionId}` && modalInteraction.user.id === initiatorId;
+			const buttonFilter = i => i.user.id === initiatorId && i.guild.id === guildId;
 
 			//Checks if the sync is enabled to another server.
 			//If it does, then applying for settings will not be allowed unless inside the main server.
@@ -122,7 +122,7 @@ module.exports = {
 				const row = new MessageActionRow()
 				.addComponents(
 					new MessageSelectMenu()
-						.setCustomId('settingsMenu')
+						.setCustomId(`settingsMenu+${mainInteractionId}`)
 						.setPlaceholder('Select the option you wish to configure...')
 						.addOptions([
 							{
