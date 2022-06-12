@@ -177,6 +177,7 @@ module.exports = {
 						case `nextVehicleImage+${mainInteractionId}`:
 							async function nextImage(){
 								await collected.deferUpdate();
+								if (page >= pages.length) return;
 								page++;
 								vehicleEmbed
 								.setImage(pages[page - 1])
@@ -185,7 +186,7 @@ module.exports = {
 									iconURL: footerIcon
 								});
 								previousButton.setDisabled(false);
-								if (page === pages.length){
+								if (page >= pages.length){
 									nextButton.setDisabled(true);
 								};
 								const row = new MessageActionRow() 
@@ -200,6 +201,7 @@ module.exports = {
 						case `previousVehicleImage+${mainInteractionId}`:
 							async function previousImage(){
 								await collected.deferUpdate();
+								if (page <= 1) return;
 								page--;
 								vehicleEmbed
 								.setImage(pages[page - 1])
@@ -208,7 +210,7 @@ module.exports = {
 									iconURL: footerIcon
 								})
 								nextButton.setDisabled(false);
-								if (page === 1){
+								if (page <= 1){
 									previousButton.setDisabled(true);
 								};
 								const row = new MessageActionRow() 
