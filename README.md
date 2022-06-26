@@ -18,12 +18,11 @@ The bot utilizes Discord's latest API version V9 to provide you with the latest 
 - The verification channel is where all the verification applications will be sent for processing by the team which will take care of verifications in your server. This channel should only be given access to the mentioned team members.
 - The log channel is where certain events such verification applicaton and garage changes are logged.
 - The guide channel is where the members will get to know how to verify with the help of a pre-made guide sent by ThrottleBot. You can delete the guide and keep your own custom one if you wish to.
-| :exclamation:  Please make sure that the bot has access to view and send messages in the channel you use the slash commands if it appears to be unresponsive.   |
-|-----------------------------------------|
-
 3. You go to `Server Settings -> Integrations -> Bot and Apps -> Click 'Manage' on ThrottleBot Verification -> Command Permissions` to whitelist or blacklist certain members or channels.
 4. Everything's setup! You can now test it out by using the `/verify` command and make sure everything is working as intented.
 5. You can join our [support server](https://discord.gg/Nh4A6HDZT4) if you need help with anything.
+
+> :exclamation:  **Please make sure that the bot has access to view and send messages in the channel you use the slash commands if it appears to be unresponsive.**
 
 ## Commands
 - `/ping` Replies with pong
