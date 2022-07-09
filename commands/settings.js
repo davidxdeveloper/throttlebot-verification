@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, Modal, TextInputComponent} = require('discord.js');
 const { obtainGuildProfile, defaultEmbedColor, obtainUserProfile, obtainAllUserVehicles } = require('../modules/database.js');
-const { vehicleSelection } = require('../modules/garageUtils.js');
+const { vehicleSelection } = require('../modules/commandUtils/garageUtils/vehicleSelection.js');
 const userProfileSchema = require('../mongodb_schema/userProfileSchema.js');
 const garageSchema = require('../mongodb_schema/garageSchema.js');
 const { botIcon, greenColor, redColor, garageIconExample, garageEmbedColorExample, errorEmbed, removeNonIntegers, isValidHttpUrl, patreonAdvertEmbed } = require('../modules/utility.js');

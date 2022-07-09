@@ -193,9 +193,9 @@ module.exports = {
 					iconURL: initiatorAvatar
 				})
 				.setDescription('A new verification application has been registered. Please process the verification using the buttons provided down below.')
-				.addField('Vehicle', vehicleName, true)
+				.addField('Vehicle', `[${vehicleName}](${vehicleImageURL})`, true)
 				.addField('Owner', `${initiatorTag} | <@${initiatorId}>`, true)
-				.addField('Image Name', vehicleImageName, true)
+				.addField('Image Name', `[${vehicleImageName}](${vehicleImageProxyURL})`, true)
 				.addField('Status', 'Due for verification',true)
 				.setImage(vehicleImageURL)
 				.setColor('#FFFCFF') //Overriding the default embed color as white, red and green will be used as application status indicators.

@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 const mongoose = require('mongoose');
-const { removeNonIntegers } = require('../modules/utility.js');
+const { removeNonIntegers } = require('../../utility.js');
 
 
 async function vehicleSelection(garage, userData, footerText, footerIcon, embedColor, interaction){
@@ -71,6 +71,7 @@ async function vehicleSelection(garage, userData, footerText, footerIcon, embedC
         };
     });
 };
+
 
 module.exports = { 
     vehicleSelection
