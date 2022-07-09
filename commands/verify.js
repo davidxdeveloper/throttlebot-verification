@@ -193,7 +193,7 @@ module.exports = {
 					iconURL: initiatorAvatar
 				})
 				.setDescription('A new verification application has been registered. Please process the verification using the buttons provided down below.')
-				.addField('Vehicle', `[${vehicleName}](${vehicleImageURL})`, true)
+				.addField('Vehicle', vehicleName, true)
 				.addField('Owner', `${initiatorTag} | <@${initiatorId}>`, true)
 				.addField('Image Name', `[${vehicleImageName}](${vehicleImageProxyURL})`, true)
 				.addField('Status', 'Due for verification',true)
