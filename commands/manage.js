@@ -22,6 +22,13 @@ module.exports = {
 		const initiatorUsername = interaction.user.username;
 		const initiatorAvatar = interaction.user.displayAvatarURL({ dynamic: true });
 		const initiatorTag = interaction.user.tag;
+		const initiatorPermissions = interaction.memberPermissions.toArray();
+		if(!initiatorPermissions.includes('MANAGE_GUILD')){
+			interaction.editReply({
+				embeds: [errorEmbed('You do not have authorization to use this command. (Manage Server permission is required)', initiatorAvatar)]
+			});
+			return;
+		};
 		const userData = interaction.options.getUser('user') 
 		|| interaction.user;
 		const userId = userData.id;
