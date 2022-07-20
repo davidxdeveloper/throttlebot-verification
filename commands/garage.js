@@ -65,7 +65,7 @@ module.exports = {
 		if(!garageData || garageData?.length === 0){
 			let errEmbed;
 			if(userId === initiatorId){
-				errEmbed = errorEmbed(`**${userName},**\nYou do not have any verified rides, Please visit the <#${guideChannelId}> channel to get started!`, initiatorAvatar)
+				errEmbed = errorEmbed(`**${userName},**\nYou do not have any verified rides, Please visit the <#${guideChannelId}> channel (check the pins) to get started!`, initiatorAvatar)
 			}else{
 				errEmbed = errorEmbed(`**${userName}** has no verified rides to display.`,initiatorAvatar)
 			};
