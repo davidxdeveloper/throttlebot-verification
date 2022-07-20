@@ -133,29 +133,9 @@ async function manageDashboard(
                     value: `manage_name+${mainInteractionId}`,
                 },
                 {
-                    label: 'Image',
-                    description: 'Add, remove or reset images on the vehicle.',
-                    value: `manage_image+${mainInteractionId}`,
-                },
-                {
-                    label: 'Description',
-                    description: 'Edit or reset the description of the vehicle.',
-                    value: `manage_description+${mainInteractionId}`,
-                },
-                {
-                    label: 'Garage Icon',
-                    description: 'Set or reset the garage icon.',
-                    value: `manage_garageIcon+${mainInteractionId}`,
-                },
-                {
                     label: 'Delete',
                     description: 'Delete a vehicle from the user\`s garage.',
                     value: `manage_delete+${mainInteractionId}`,
-                },
-                {
-                    label: 'Reset',
-                    description: 'Reset the user\'s garage.',
-                    value: `manage_reset+${mainInteractionId}`,
                 },
                 {
                     label: 'Exit',

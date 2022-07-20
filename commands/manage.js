@@ -23,9 +23,9 @@ module.exports = {
 		const initiatorAvatar = interaction.user.displayAvatarURL({ dynamic: true });
 		const initiatorTag = interaction.user.tag;
 		const initiatorPermissions = interaction.memberPermissions.toArray();
-		if(!initiatorPermissions.includes('MANAGE_GUILD')){
+		if(!initiatorPermissions.includes('MANAGE_GUILD') || !initiatorPermissions.includes('MANAGE_CHANNELS')){
 			interaction.editReply({
-				embeds: [errorEmbed('You do not have authorization to use this command. (Manage Server permission is required)', initiatorAvatar)]
+				embeds: [errorEmbed('You do not have authorization to use this command. (Manage Server/Channels permission is required)', initiatorAvatar)]
 			});
 			return;
 		};

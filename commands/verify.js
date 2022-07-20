@@ -117,7 +117,7 @@ module.exports = {
 		const initiatorGarage = await obtainAllUserVehicles(initiatorId, guildId);
 		//Check if there is a vehicle in the users garage
 		//with the same name as the one they're trying to verify.
-		if(initiatorGarage?.garageVehicles?.includes(vehicleName)){
+		if(initiatorGarage?.map(x => x.vehicle)?.includes(vehicleName)){
 			await interaction.editReply({
 				embeds: [errorEmbed(`You already have a verified vehicle named \`${vehicleName}\`\nPlease use a different name for this ride.`, initiatorAvatar)],
 				components: [],

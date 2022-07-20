@@ -13,7 +13,7 @@ module.exports = {
 			const aboutEmbed = new MessageEmbed()
 			.setTitle('ThrottleBot Vehicle Verification')
 			.setDescription('We\'re simplifying the process of verifying your vehicles across Discord by providing a seamless and feature full experience.\nThe bot utilizes Discord\'s latest API version V9 to provide you with the latest features that are available.')
-			.addField('Freatures','• A garage system to store and display all your vehicles.\n• Seamless verifcation process with the help of buttons.\n• Slash commands for a powerful and interactive experience.\n• Syncing across different servers.')
+			.addField('Features','• A garage system to store and display all your vehicles.\n• Seamless verifcation process with the help of buttons.\n• Slash commands for a powerful and interactive experience.\n• Syncing across different servers.')
 			.setColor('#FFFCFF')
 			.setFooter({
 				text: `Made with 💖 by ${ownerTag}`,
