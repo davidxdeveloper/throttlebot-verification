@@ -384,7 +384,7 @@ module.exports = {
                     break
                 case 'denyReadGuide':
                     async function denyReadGuide(){
-                        const denialReason = `Please follow the procedures as listed in the channel <#${guideChannelId}>\nApply for verification again after making sure you have met all the requirements!`
+                        const denialReason = `Please follow the procedures as listed in the channel <#${guideChannelId}> (Check the pins)\nApply for verification again after making sure you have met all the requirements!`
 
                         await verificationSchema.updateOne({userId: applicantId, vehicle: vehicleName, status: 'open'}, {$set: { status: 'closed', decision: `denied | ${denialReason}`, decidedBy: initiatorId, decidedOn: todaysDate }})
                         .catch(async err => {
