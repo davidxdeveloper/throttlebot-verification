@@ -26,11 +26,12 @@
   "dependencies": {
     "@discordjs/rest": "^0.5.0",
     "@google-cloud/vision": "^2.4.2",
-    "discord-api-types": "^0.36.1",
-    "discord.js": "^13.8.1",
+    "discord-api-types": "^0.36.2",
+    "discord.js": "^13.9.0",
     "dotenv": "^16.0.1",
+    "escape-string-regexp": "^5.0.0",
     "moment": "^2.29.4",
-    "mongoose": "^6.4.3",
+    "mongoose": "^6.4.6",
     "validate.io-color-hexadecimal": "^1.0.0"
   }
 }
