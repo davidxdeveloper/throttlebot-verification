@@ -14,7 +14,7 @@ async function vehicleSelection(garage, userData, footerText, footerIcon, embedC
             const userAvatar = userData.displayAvatarURL({ dynamic: true });
 		    const userTag = userData.tag;
             const userId = userData.id;
-            const messageFilter = (m) => m.author.id === userId;
+            const messageFilter = (m) => m.author.id === interaction.user.id;
 
             if(garage.length === 1){
                 resolve(garage[0]);

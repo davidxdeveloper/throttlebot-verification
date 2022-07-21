@@ -23,7 +23,6 @@ module.exports = {
 		const initiatorAvatar = interaction.user.displayAvatarURL({ dynamic: true });
 		const initiatorTag = interaction.user.tag;
 		const initiatorPermissions = interaction.memberPermissions.toArray();
-		console.log(initiatorPermissions)
 		if(!initiatorPermissions.includes('MANAGE_NICKNAMES')){
 			interaction.editReply({
 				embeds: [errorEmbed('You do not have authorization to use this command. (Manage Server/Channels permission is required)', initiatorAvatar)]
