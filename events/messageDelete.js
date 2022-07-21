@@ -7,7 +7,7 @@ module.exports = {
         const attachmentURL = attachment?.url;
         if(attachmentURL){
             const data = await garageSchema.find().all('vehicleImages',[attachmentURL]);
-            if(data){
+            if(data && data.length > 0){
                 const vehicleData = data[0];
                 const userId = vehicleData.userId;
                 const guildId = vehicleData.guildId

@@ -113,6 +113,16 @@ module.exports = {
 				return;
 			};
 		};
+
+		if(vehicleImageName.includes('heic')){
+			await interaction.editReply({
+				embeds: [errorEmbed('`HEIC` Images are not supported on Discord.\nPlease try to take a screenshot of the image and verifying again with the screenshot instead.', initiatorAvatar)],
+				components: [],
+				ephemeral: true
+			});
+			return;
+		};
+
 		//User's garage
 		const initiatorGarage = await obtainAllUserVehicles(initiatorId, guildId);
 		//Check if there is a vehicle in the users garage
