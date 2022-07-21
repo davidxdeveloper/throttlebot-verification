@@ -11,7 +11,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('verify')
 		.setDescription('Apply for verification of your vehicle.')
-		.addStringOption(option => option.setName('vehicle-name').setDescription('Enter the name of your vehicle.').setRequired(true))
+		.addStringOption(option => option.setName('vehicle').setDescription('Enter the name of your vehicle.').setRequired(true))
 		.addAttachmentOption(option => option.setName('image').setDescription('Please upload the image of your vehicle with all the required items.').setRequired(true)),
 
 		async execute(interaction) {
@@ -23,7 +23,7 @@ module.exports = {
 		const vehicleImageSize = vehicleAttachmentData.size;
 		const vehicleImageName = vehicleAttachmentData.name;
 		const vehicleImageType = vehicleAttachmentData.contentType;
-		const vehicleName = interaction.options.getString('vehicle-name');
+		const vehicleName = interaction.options.getString('vehicle');
 		//Defining user details.
 		const initiatorId = interaction.user.id;
 		const initiatorUsername = interaction.user.username;

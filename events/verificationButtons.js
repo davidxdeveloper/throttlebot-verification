@@ -78,13 +78,13 @@ module.exports = {
                 vApplicationEmbed.color = redColor
                 vApplicationEmbed.addField('Decided By', `${initiatorTag} | <@${initiatorId}>`);
                 
-                const denideButton = new MessageButton()
+                const deniedButton = new MessageButton()
                 .setCustomId('disabled')
                 .setLabel('Denied - Read The Guide')
                 .setStyle('DANGER')
                 .setDisabled(true);
                 const row = new MessageActionRow()
-                .addComponents(denideButton)
+                .addComponents(deniedButton)
                 await interaction.editReply({
                     embeds: [vApplicationEmbed],
                     components: [row]
@@ -138,6 +138,14 @@ module.exports = {
             switch(buttonId){
                 case 'approveApplication':
                     async function approveApplication(){
+                        if(cooldownStatus){
+                            await interaction.followUp({
+                                content: 'Please wait, the deny button is currently being used.',
+                                ephemeral: true
+                            });
+                            return;
+                        };
+
                         await verificationSchema.updateOne({userId: applicantId, vehicle: vehicleName, status: 'open'}, {$set: { status: 'closed', decision: 'approved', decidedBy: initiatorId, decidedOn: todaysDate }})
                         .catch(async err => {
                             await interaction.followUp({
@@ -202,7 +210,7 @@ module.exports = {
                             await applicantData.roles.add(roleToGive)
                             .catch(async err => {
                                 await interaction.followUp({
-                                    embeds: [errorEmbed(`I was unable to give the <@&${roleToGive}> to ${applicantTag}. - ${err}`, initiatorAvatar)]
+                                    embeds: [errorEmbed(`I was unable to give the <@&${roleToGive}> role to ${applicantTag}. - ${err}`, initiatorAvatar)]
                                 });
                             });
                         };
@@ -307,13 +315,13 @@ module.exports = {
                         vApplicationEmbed.color = redColor
                         vApplicationEmbed.addField('Decided By', `${initiatorTag} | <@${initiatorId}>`);
                         
-                        const denideButton = new MessageButton()
+                        const deniedButton = new MessageButton()
                         .setCustomId('disabled')
                         .setLabel('Denied')
                         .setStyle('DANGER')
                         .setDisabled(true);
                         const row = new MessageActionRow()
-                        .addComponents(denideButton)
+                        .addComponents(deniedButton)
                         await interaction.editReply({
                             embeds: [vApplicationEmbed],
                             components: [row]
@@ -384,6 +392,15 @@ module.exports = {
                     break
                 case 'denyReadGuide':
                     async function denyReadGuide(){
+
+                        if(cooldownStatus){
+                            await interaction.followUp({
+                                content: 'Please wait, the deny button is currently being used.',
+                                ephemeral: true
+                            });
+                            return;
+                        };
+                        
                         const denialReason = `Please follow the procedures as listed in the channel <#${guideChannelId}> (Check the pins)\nApply for verification again after making sure you have met all the requirements!`
 
                         await verificationSchema.updateOne({userId: applicantId, vehicle: vehicleName, status: 'open'}, {$set: { status: 'closed', decision: `denied | ${denialReason}`, decidedBy: initiatorId, decidedOn: todaysDate }})
@@ -398,13 +415,13 @@ module.exports = {
                         vApplicationEmbed.color = redColor
                         vApplicationEmbed.addField('Decided By', `${initiatorTag} | <@${initiatorId}>`);
                         
-                        const denideButton = new MessageButton()
+                        const deniedButton = new MessageButton()
                         .setCustomId('disabled')
                         .setLabel('Denied - Read The Guide')
                         .setStyle('DANGER')
                         .setDisabled(true);
                         const row = new MessageActionRow()
-                        .addComponents(denideButton)
+                        .addComponents(deniedButton)
                         await interaction.editReply({
                             embeds: [vApplicationEmbed],
                             components: [row]

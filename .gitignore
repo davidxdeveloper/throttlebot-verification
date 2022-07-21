@@ -108,3 +108,6 @@ package-lock.json
 
 # Formatting
 .eslintrc.json
+
+#Main files
+deploy-commands.js
