@@ -76,7 +76,11 @@ module.exports = {
 		};
 		
 		const garageOutput = garageData.map((x,y) => {
-			return `\`${y+1}.\` ${x.vehicle}`
+			if(x.vehicleImages.length > 0){
+				return `\`${y+1}.\` [${x.vehicle}](${x.vehicleImages[0]})`
+			}else{
+				return `\`${y+1}.\` ${x.vehicle}`
+			};
 		});
 
 		const garageEmbed = new MessageEmbed()
