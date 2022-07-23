@@ -1,14 +1,14 @@
 
 # 🤖 ThrottleBot - Vehicle Verification Bot
 
-We're simplying the process of verifying your vehicles across Discord by featuring a seamless and feature full experience.
+We're simplifying the process of verifying your vehicles across Discord by featuring a seamless and feature full experience.
 
 The bot utilizes Discord's latest API version V9 to provide you with the latest features that are available.
 
 + A garage system to store and display all your vehicles.
 + Seamless verifcation process with the help of buttons.
 + Slash commands for a powerful and interactive experience.
-+ Syncing across different servers. (Coming Soon)
++ Syncing across different servers. (beta)
 
 ## Getting Started
 1. Invite ThrottleBot Verification (hosted by us) to your server.
@@ -21,6 +21,7 @@ The bot utilizes Discord's latest API version V9 to provide you with the latest 
 3. You go to `Server Settings -> Integrations -> Bot and Apps -> Click 'Manage' on ThrottleBot Verification -> Command Permissions` to whitelist or blacklist certain members or channels.
 4. Everything's setup! You can now test it out by using the `/verify` command and make sure everything is working as intented.
 5. You can join our [support server](https://discord.gg/Nh4A6HDZT4) if you need help with anything.
+6. Our Trello board can be found here: [ThrottleBot Verification Trello](https://trello.com/b/VkCeRfrR)
 
 > :exclamation:  **Please make sure that the bot has access to view and send messages in the channel you use the slash commands if it appears to be unresponsive.**
 
@@ -34,4 +35,6 @@ The bot utilizes Discord's latest API version V9 to provide you with the latest 
 - `/search` Search server-wide for a specific vehicle
 - `/settings` Add your vehicle's images, set description and more personalisation options
 - `/manage` Manage verified rides, edit, delete them etc.
+
+
 
